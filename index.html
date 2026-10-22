@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Movember Fantasy Football 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5F0; --surface:#FFFFFF; --ink:#16201A; --muted:#5B6860; --line:#D9DFD6;
+  --pitch:#22603C; --pitch2:#2A6E46; --chalk:rgba(255,255,255,.55);
+  --tache:#3B2A1E; --gold:#E9A93A; --gold-ink:#3A2600; --danger:#B3261E; --ok:#1F7A45;
+  --shirt:#FFFFFF; --shirt-ink:#16201A; --empty:rgba(255,255,255,.14);
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1512; --surface:#18211C; --ink:#E8EEE9; --muted:#9AA8A0; --line:#2B3831;
+    --pitch:#174A2D; --pitch2:#1C5435; --chalk:rgba(255,255,255,.35);
+    --tache:#D9BFA6; --gold:#F0B54D; --gold-ink:#2A1B00; --danger:#F2817A; --ok:#5CCB8A;
+    --shirt:#E8EEE9; --shirt-ink:#0F1512; --empty:rgba(255,255,255,.08);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1512; --surface:#18211C; --ink:#E8EEE9; --muted:#9AA8A0; --line:#2B3831;
+  --pitch:#174A2D; --pitch2:#1C5435; --chalk:rgba(255,255,255,.35);
+  --tache:#D9BFA6; --gold:#F0B54D; --gold-ink:#2A1B00; --danger:#F2817A; --ok:#5CCB8A;
+  --shirt:#E8EEE9; --shirt-ink:#0F1512; --empty:rgba(255,255,255,.08);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.cond{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.01em}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+
+/* header */
+header{padding:28px 0 8px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand svg{flex:none;width:64px;height:auto;color:var(--tache)}
+h1{font-size:clamp(34px,8vw,52px);line-height:.95;margin:0;font-weight:800}
+.sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+.clock{margin:22px 0 4px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.clock .num{font:800 clamp(30px,7vw,44px)/1 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums}
+.clock .lbl{color:var(--muted);font-size:15px}
+
+/* tabs */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-top:14px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto}
+nav button{background:none;border:0;padding:12px 12px 10px;font:700 19px/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--ink);border-color:var(--gold)}
+main{padding:22px 0 60px}
+section[hidden]{display:none}
+
+/* form */
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+@media (max-width:520px){.fields{grid-template-columns:1fr}}
+label.f{display:block;font-weight:600;font-size:15px}
+label.f span.req{color:var(--danger)}
+input[type=text],input[type=search],input[type=number],select{width:100%;margin-top:4px;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface)}
+input[aria-invalid="true"]{border-color:var(--danger)}
+
+/* pitch */
+.pitch{position:relative;border-radius:18px;padding:22px 8px 18px;background:
+  repeating-linear-gradient(180deg,var(--pitch) 0 44px,var(--pitch2) 44px 88px);
+  overflow:hidden}
+.pitch::before{content:"";position:absolute;inset:10px;border:2px solid var(--chalk);border-radius:6px;pointer-events:none}
+.pitch::after{content:"";position:absolute;left:50%;bottom:10px;width:46%;height:62px;transform:translateX(-50%);border:2px solid var(--chalk);border-bottom:0;pointer-events:none}
+.row{position:relative;z-index:1;display:flex;justify-content:space-evenly;gap:4px;margin:6px 0 14px}
+.slot{width:min(23%,128px);background:none;border:0;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff}
+.slot:disabled{cursor:default}
+.shirt{position:relative;width:52px;height:50px}
+.shirt svg{width:100%;height:100%}
+.shirt .body{fill:var(--empty);stroke:rgba(255,255,255,.7);stroke-width:2;stroke-dasharray:4 3}
+.slot.filled .shirt .body{fill:var(--shirt);stroke:none}
+.shirt .code{position:absolute;inset:14px 0 0;text-align:center;font:800 14px/1 "Barlow Condensed","Arial Narrow",sans-serif;color:var(--shirt-ink)}
+.slot:not(.filled) .shirt .code{color:#fff;font-size:22px;inset:9px 0 0}
+.armband{position:absolute;right:-6px;top:-4px;width:20px;height:20px;border-radius:50%;background:var(--gold);color:var(--gold-ink);font:800 13px/20px "Barlow Condensed",sans-serif;text-align:center;display:none}
+.slot.cap .armband{display:block}
+.pname{font:700 15px/1.05 "Barlow Condensed","Arial Narrow",sans-serif;background:rgba(0,0,0,.42);padding:3px 6px;border-radius:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ppos{font-size:12px;opacity:.8;font-weight:600}
+
+.captain{margin:18px 0 6px}
+.checks{list-style:none;padding:0;margin:14px 0;display:grid;gap:4px;font-size:15px}
+.checks li::before{content:"○";display:inline-block;width:1.4em;color:var(--muted)}
+.checks li.ok{color:var(--muted)}
+.checks li.ok::before{content:"✓";color:var(--ok);font-weight:700}
+.primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:14px 26px;font:800 20px/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.02em;cursor:pointer;width:100%}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.ghost{background:none;border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:600}
+.note{padding:14px 16px;border-radius:12px;background:var(--surface);border:1px solid var(--line);margin:0 0 18px}
+.note.good{border-left:5px solid var(--ok)}
+.note.warn{border-left:5px solid var(--gold)}
+.note.bad{border-left:5px solid var(--danger)}
+.note p{margin:4px 0 0}
+.err{color:var(--danger);font-weight:600;margin:10px 0 0}
+
+/* sheet */
+dialog{border:0;padding:0;width:min(560px,100%);max-height:86vh;border-radius:18px 18px 0 0;margin:auto auto 0;background:var(--surface);color:var(--ink)}
+@media (min-width:640px){dialog{border-radius:18px;margin:auto}}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.sheet{display:flex;flex-direction:column;max-height:86vh}
+.sheet-h{padding:16px 16px 10px;border-bottom:1px solid var(--line)}
+.sheet-h .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sheet-h h3{margin:0;font-size:26px}
+.sheet-h .filters{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-top:8px}
+.list{overflow-y:auto;padding:4px 0 calc(10px + env(safe-area-inset-bottom,0px))}
+.opt{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 16px;cursor:pointer}
+.opt:hover:not(:disabled){background:var(--bg)}
+.opt:disabled{opacity:.42;cursor:not-allowed}
+.opt .c{font:800 15px/1 "Barlow Condensed",sans-serif;color:var(--muted)}
+.opt .n{font-weight:600}
+.opt .why{display:block;font-size:13px;color:var(--danger);font-weight:600}
+.opt .pts{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.opt.sel{background:var(--bg)}
+
+/* league */
+.league{display:grid;gap:10px}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.entry .hd{display:flex;align-items:baseline;gap:12px}
+.entry .rank{font:800 26px/1 "Barlow Condensed",sans-serif;min-width:1.4em;color:var(--muted);font-variant-numeric:tabular-nums}
+.entry .who{flex:1;min-width:0}
+.entry .tn{font:700 22px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.entry .mn{color:var(--muted);font-size:14px}
+.entry .tot{font:800 28px/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.entry .tot small{display:block;font:600 12px/1.2 "Source Sans 3",sans-serif;color:var(--muted)}
+.lock{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:600}
+.entry.me{border-color:var(--gold);border-width:2px}
+details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:14px;margin-top:8px}
+.sqt{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+.sqt td,.sqt th{padding:5px 4px;border-bottom:1px solid var(--line);text-align:left}
+.sqt th{color:var(--muted);font-weight:600}
+.sqt .r{text-align:right;font-variant-numeric:tabular-nums}
+.cbadge{display:inline-block;background:var(--gold);color:var(--gold-ink);border-radius:4px;padding:0 5px;font:800 12px/18px "Barlow Condensed",sans-serif;margin-left:4px}
+.scroll{overflow-x:auto}
+.empty{text-align:center;padding:36px 16px;color:var(--muted)}
+
+/* rules */
+.rules h2{font-size:30px;margin:26px 0 6px}
+.rules h2:first-child{margin-top:0}
+.rules ul{padding-left:20px;margin:6px 0}
+.rules li{margin:6px 0;max-width:68ch}
+.rules a{color:inherit;text-decoration-color:var(--gold);text-decoration-thickness:2px}
+.fx{border-collapse:collapse;font-size:14px;min-width:460px;width:100%}
+.fx th,.fx td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.fx th{font-weight:600;color:var(--muted)}
+.fx td:first-child{font:800 15px "Barlow Condensed",sans-serif}
+
+/* fixtures */
+.gwpick{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 20px}
+.gwpick button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;text-align:left;line-height:1.15}
+.gwpick button b{display:block;font:800 18px/1 "Barlow Condensed","Arial Narrow",sans-serif}
+.gwpick button span{font-size:13px;color:var(--muted)}
+.gwpick button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.gwpick button[aria-pressed="true"] span{color:inherit;opacity:.75}
+.gwhead{font-size:30px;margin:0 0 2px}
+.matches{list-style:none;padding:0;margin:10px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.match{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.match:last-child{border-bottom:0}
+.match .home{text-align:right}
+.match .v{text-align:center;color:var(--muted);font-size:14px}
+.match .club{font:700 19px/1.1 "Barlow Condensed","Arial Narrow",sans-serif}
+.match .mine{display:block;font-size:12px;font-weight:600;color:var(--ok)}
+
+/* scores (organiser) */
+.scoregrid{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+.scoregrid th,.scoregrid td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.scoregrid input{width:58px;padding:7px 6px;margin:0;text-align:center}
+.sticky-save{position:sticky;bottom:0;background:var(--bg);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);margin-top:12px;display:flex;gap:10px;align-items:center}
+.sticky-save .primary{width:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;z-index:20;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 120 44" aria-hidden="true"><path fill="currentColor" d="M60 14c-6-9-18-12-28-6-7 4-10 13-18 14-6 1-11-3-13-8 0 13 10 25 25 25 13 0 22-8 30-15 2-2 3-3 4-3s2 1 4 3c8 7 17 15 30 15 15 0 25-12 25-25-2 5-7 9-13 8-8-1-11-10-18-14-10-6-22-3-28 6z"/></svg>
+    <div>
+      <h1>Movember Fantasy Football</h1>
+      <p class="sub">2026/27 FPL challenge, gameweeks 9 to 12</p>
+    </div>
+  </div>
+  <div class="clock" id="clock" aria-live="off"></div>
+</header>
+
+<nav aria-label="Sections"><div class="wrap" role="tablist">
+  <button role="tab" id="t-enter" aria-controls="enter" aria-selected="true">My team</button>
+  <button role="tab" id="t-league" aria-controls="league" aria-selected="false">League</button>
+  <button role="tab" id="t-fixtures" aria-controls="fixtures" aria-selected="false">Fixtures</button>
+  <button role="tab" id="t-rules" aria-controls="rules" aria-selected="false">Rules</button>
+  <button role="tab" id="t-scores" aria-controls="scores" aria-selected="false" hidden>Enter scores</button>
+</div></nav>
+
+<main class="wrap">
+  <section id="enter" role="tabpanel" aria-labelledby="t-enter">
+    <div id="status"></div>
+    <div class="fields">
+      <label class="f">Team name <span class="req" aria-hidden="true">*</span>
+        <input type="text" id="teamName" maxlength="40" required autocomplete="off" placeholder="e.g. Tache Me If You Can">
+      </label>
+      <label class="f">Your name <span class="req" aria-hidden="true">*</span>
+        <input type="text" id="playerName" maxlength="40" required autocomplete="name" placeholder="First and last name">
+      </label>
+    </div>
+    <div class="pitch" id="pitch" aria-label="Your starting eleven, 4-4-2"></div>
+    <label class="f captain">Captain (double points every gameweek) <span class="req" aria-hidden="true">*</span>
+      <select id="captain"><option value="">Pick from your eleven</option></select>
+    </label>
+    <ul class="checks" id="checks"></ul>
+    <button class="primary" id="save">Lock in my team</button>
+    <p class="err" id="saveErr" role="alert"></p>
+  </section>
+
+  <section id="league" role="tabpanel" aria-labelledby="t-league" hidden>
+    <div id="leagueHead"></div>
+    <div class="league" id="leagueList"></div>
+  </section>
+
+  <section id="fixtures" role="tabpanel" aria-labelledby="t-fixtures" hidden>
+    <div class="gwpick" id="gwPick" role="group" aria-label="Choose a gameweek"></div>
+    <div id="gwBody"></div>
+  </section>
+
+  <section id="rules" class="rules" role="tabpanel" aria-labelledby="t-rules" hidden>
+    <h2>How it works</h2>
+    <ul>
+      <li>Scoring follows the official FPL points rules, as a four-gameweek sprint from GW9 to GW12.</li>
+      <li>Pick a starting eleven in a 4-4-2: one goalkeeper, four defenders, four midfielders and two forwards.</li>
+      <li>Set and forget. No substitutions or transfers. If a player is injured or doesn’t play, you play with one fewer.</li>
+      <li>No budget. Pick whoever you like.</li>
+      <li>Only one player from each Premier League club.</li>
+      <li>Pick one captain for all four gameweeks. Your captain scores double every week and can’t be changed, even if injured.</li>
+      <li>Positions follow the official FPL position allocation.</li>
+      <li>A postponed game that’s replayed within GW9 to GW12 counts as a double gameweek. Only games played in GW9 to GW12 count.</li>
+      <li>Squads stay hidden until the game starts on 1 November. You can change your team until then.</li>
+    </ul>
+    <h2>Entry fee</h2>
+    <ul>
+      <li>Entry is $20 per team: $10 goes to Movember and $10 goes into the prize pool.</li>
+    </ul>
+    <h2>Prize</h2>
+    <ul>
+      <li>The team with the highest points total across GW9 to GW12 wins the total prize pool. <span id="poolLine"></span></li>
+      <li>If there’s a tie for first place, the highest scorer in GW12 wins. If it’s still a draw, the highest score in GW11, then GW10, then GW9 decides it, whichever produces a winner first. If it’s still a draw after that, the prize is shared.</li>
+      <li>A league table goes round after the final match of each gameweek.</li>
+    </ul>
+    <h2>Useful links</h2>
+    <ul>
+      <li><a href="https://www.premierleague.com/en/news/2174909" target="_blank" rel="noopener">FPL scoring rules</a></li>
+      <li><a href="https://fpl.team/plan" target="_blank" rel="noopener">FPL team planner</a> for positions and planning</li>
+    </ul>
+    <p class="sub" style="margin-top:16px">Good luck, and thank you for supporting Movember.</p>
+  </section>
+
+  <section id="scores" role="tabpanel" aria-labelledby="t-scores" hidden>
+    <div class="note"><strong>Organiser only.</strong><p>Enter each picked player’s FPL points per gameweek (before captain bonus). The league table updates for everyone when you save.</p></div>
+    <input type="search" id="scoreSearch" placeholder="Filter players" aria-label="Filter players" style="margin-bottom:10px">
+    <div class="scroll"><table class="scoregrid" id="scoreGrid"></table></div>
+    <div class="sticky-save"><button class="primary" id="saveScores">Save scores</button><span id="scoreMsg" class="sub"></span></div>
+  </section>
+</main>
+<footer class="wrap" style="padding:0 18px 40px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <span>Raising money for Movember.</span>
+  <button class="ghost" id="orgLogin" type="button" style="font-size:13px;padding:5px 12px">Organiser login</button>
+</footer>
+
+<dialog id="picker" aria-labelledby="pickTitle">
+  <div class="sheet">
+    <div class="sheet-h">
+      <div class="top"><h3 id="pickTitle">Pick</h3><button class="ghost" id="pickClose">Close</button></div>
+      <div class="filters">
+        <input type="search" id="pickSearch" placeholder="Search players" aria-label="Search players">
+        <select id="pickClub" aria-label="Filter by club"><option value="">All clubs</option></select>
+      </div>
+      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <span class="sub" style="margin:0;font-size:13px">Sorted by projected points</span>
+        <button class="ghost" id="pickClear" hidden>Remove player</button>
+      </div>
+    </div>
+    <div class="list" id="pickList"></div>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const PLAYERS = [["David Raya","Arsenal","GK",158.4],["Gabriel","Arsenal","DEF",177.8],["Bruno Fernandes","Man Utd","MID",210.7],["Erling Haaland","Man City","ATT",216.6],["Gianluigi Donnarumma","Man City","GK",150.3],["Virgil van Dijk","Liverpool","DEF",157.1],["Morgan Gibbs-White","Nott'm Forest","MID",200.3],["Igor Thiago","Brentford","ATT",162.2],["Jordan Pickford","Everton","GK",140.5],["Adrien Truffert","Bournemouth","DEF",155.9],["Bukayo Saka","Arsenal","MID",180.9],["Joao Pedro","Chelsea","ATT",160.3],["Caoimhin Kelleher","Brentford","GK",140.0],["James Tarkowski","Everton","DEF",154.4],["Dominik Szoboszlai","Liverpool","MID",178.1],["Alexander Isak","Liverpool","ATT",145.6],["Alisson","Liverpool","GK",137.6],["Pedro Porro","Spurs","DEF",151.4],["Matheus Cunha","Man Utd","MID",177.4],["Dominic Calvert-Lewin","Leeds","ATT",141.5],["Robin Roefs","Sunderland","GK",137.5],["Nico O'Reilly","Man City","DEF",148.9],["Cole Palmer","Chelsea","MID",170.8],["Nicolas Jackson","Aston Villa","ATT",138.5],["Zion Suzuki","Aston Villa","GK",135.6],["Malick Thiaw","Newcastle","DEF",147.4],["Bryan Mbeumo","Man Utd","MID",168.2],["Gonzalo Garcia","Fulham","ATT",132.9],["Lukas Hornicek","Newcastle","GK",135.2],["Matheus Nunes","Man City","DEF",146.9],["Antoine Semenyo","Man City","MID",164.2],["Thierno Barry","Everton","ATT",129.1],["Matz Sels","Nott'm Forest","GK",134.1],["Neco Williams","Nott'm Forest","DEF",142.8],["Morgan Rogers","Chelsea","MID",162.9],["Igor Jesus","Nott'm Forest","ATT",128.2],["James Trafford","Leeds","GK",134.0],["Chris Richards","Crystal Palace","DEF",141.4],["Kiernan Dewsbury-Hall","Everton","MID",157.8],["Kai Havertz","Arsenal","ATT",127.7],["Emiliano Martinez","Chelsea","GK",133.4],["Vitaliy Mykolenko","Everton","DEF",141.0],["Rayan Cherki","Man City","MID",154.6],["Yoane Wissa","Newcastle","ATT",122.7],["Dean Henderson","Crystal Palace","GK",129.4],["Tyrick Mitchell","Crystal Palace","DEF",140.5],["Jeremy Doku","Man City","MID",153.4],["Omar Marmoush","Spurs","ATT",115.8],["Bart Verbruggen","Brighton","GK",128.6],["Jarrad Branthwaite","Everton","DEF",140.0],["Florian Wirtz","Liverpool","MID",152.6],["Brian Brobbey","Sunderland","ATT",114.1],["Antonin Kinsky","Spurs","GK",127.0],["Jurrien Timber","Arsenal","DEF",139.2],["Declan Rice","Arsenal","MID",147.1],["Jean-Philippe Mateta","Crystal Palace","ATT",107.6],["Carl Rushworth","Coventry","GK",125.8],["Marc Guehi","Man City","DEF",137.0],["Rayan","Bournemouth","MID",146.5],["Oliver McBurnie","Hull","ATT",103.7],["Senne Lammens","Man Utd","GK",124.7],["Jan Paul van Hecke","Spurs","DEF",135.4],["Marcus Tavernier","Bournemouth","MID",145.8],["Evanilson","Bournemouth","ATT",101.1],["Bernd Leno","Fulham","GK",123.2],["Nathan Collins","Brentford","DEF",134.6],["Enzo Le Fee","Sunderland","MID",143.6],["Viktor Gyokeres","Arsenal","ATT",99.3],["Kjell Scherpen","Ipswich","GK",106.8],["Milos Kerkez","Liverpool","DEF",134.5],["John McGinn","Aston Villa","MID",141.1],["Will Osula","Newcastle","ATT",97.2],["Djordje Petrovic","Bournemouth","GK",98.6],["Murillo","Nott'm Forest","DEF",134.5],["Bradley Barcola","Liverpool","MID",140.1],["Taiwo Awoniyi","Coventry","ATT",95.1],["Konstantinos Tzolakis","Hull","GK",97.0],["Josko Gvardiol","Man City","DEF",133.6],["Diego Gomez","Brighton","MID",136.7],["Benjamin Sesko","Man Utd","ATT",90.6],["Michele Di Gregorio","Bournemouth","GK",35.2],["Nikola Milenkovic","Nott'm Forest","DEF",131.4],["Phil Foden","Man City","MID",133.0],["Matias Fernandez-Pardo","Newcastle","ATT",90.3],["Riccardo Calafiori","Arsenal","DEF",131.2],["Harvey Barnes","Newcastle","MID",131.3],["Georginio Rutter","Brighton","ATT",88.5],["Anan Khalaili","Crystal Palace","DEF",129.8],["Ryan Gravenberch","Liverpool","MID",131.2],["Emersonn","Ipswich","ATT",87.0],["Michael Kayode","Brentford","DEF",127.7],["Elliot Anderson","Man City","MID",130.7],["Dominic Solanke","Spurs","ATT",84.7],["Marcos Senesi","Spurs","DEF",124.3],["Jack Grealish","Everton","MID",130.0],["Liam Delap","Nott'm Forest","ATT",82.7],["Nordi Mukiele","Sunderland","DEF",122.5],["Dango Ouattara","Brentford","MID",128.8],["Chris Wood","Nott'm Forest","ATT",75.4],["Ferdi Kadioglu","Brighton","DEF",121.1],["Alexis Mac Allister","Liverpool","MID",127.9],["Jorgen Strand Larsen","Crystal Palace","ATT",74.5],["Maxim De Cuyper","Brighton","DEF",120.0],["James Garner","Everton","MID",127.0],["Brandon Thomas-Asante","Coventry","ATT",70.4],["James Hill","Bournemouth","DEF",119.2],["Bruno Guimaraes","Arsenal","MID",126.6],["Danny Welbeck","Chelsea","ATT",68.9],["Daniel Ballard","Sunderland","DEF",118.2],["Alex Iwobi","Fulham","MID",126.6],["Promise David","Brighton","ATT",66.4],["Diogo Dalot","Man Utd","DEF",116.6],["Enzo Fernandez","Man City","MID",124.8],["Zian Flemming","Ipswich","ATT",64.8],["Ainsley Maitland-Niles","Everton","DEF",115.0],["Alex Scott","Bournemouth","MID",124.4],["Rodrigo Muniz","Fulham","ATT",59.9],["Lewis Hall","Newcastle","DEF",114.0],["Ethan Ampadu","Leeds","MID",124.1],["Brian Madjo","Aston Villa","ATT",58.4],["Jaydee Canvot","Crystal Palace","DEF",113.4],["Kevin Schade","Brentford","MID",123.9],["Alvaro Rodriguez","Bournemouth","ATT",51.7],["Olivier Boscagli","Brighton","DEF",113.1],["Lewis Miley","Newcastle","MID",123.4],["Charalampos Kostoulas","Brighton","ATT",49.5],["Luka Vuskovic","Brighton","DEF",110.1],["Anton Stach","Leeds","MID",123.2],["Wilson Isidor","Sunderland","ATT",49.1],["Taylor Harwood-Bellis","Aston Villa","DEF",109.7],["Granit Xhaka","Sunderland","MID",122.8],["Sidiki Cherif","Coventry","ATT",44.6],["Matty Cash","Aston Villa","DEF",109.7],["Cody Gakpo","Liverpool","MID",122.1],["Lukas Nmecha","Leeds","ATT",44.5],["Antonee Robinson","Fulham","DEF",107.3],["Marcus Rashford","Man Utd","MID",122.0],["Eddie Nketiah","Crystal Palace","ATT",41.7],["Milan van Ewijk","Coventry","DEF",107.2],["Pascal Gross","Brighton","MID",121.2],["Haji Wright","Coventry","ATT",40.2],["Joe Rodon","Leeds","DEF",107.0],["Emiliano Buendia","Aston Villa","MID",121.2],["Callum Wilson","Brentford","ATT",38.5],["Bobby Thomas","Coventry","DEF",106.8],["Jack Hinshelwood","Brighton","MID",120.4],["Hugo Ekitike","Liverpool","ATT",33.4],["Calvin Bassey","Fulham","DEF",105.5],["Mamadou Sangare","Brentford","MID",118.7],["Stefanos Tzimas","Brighton","ATT",27.4],["Lisandro Martinez","Man Utd","DEF",105.5],["Martin Odegaard","Arsenal","MID",117.9],["Richarlison","Spurs","ATT",26.2],["Antonio Silva","Bournemouth","DEF",104.7],["Junior Kroupi","Bournemouth","MID",117.7],["Sindre Egeli","Ipswich","ATT",25.0],["Reece James","Chelsea","DEF",103.8],["Moises Caicedo","Chelsea","MID",117.5],["Emmanuel Emegha","Chelsea","ATT",23.7],["Jayden Bogle","Leeds","DEF",103.5],["Mohamed Belloumi","Hull","MID",116.3],["Daniel Munoz","Nott'm Forest","DEF",103.4],["Ismaila Sarr","Crystal Palace","MID",115.9],["Maxence Lacroix","Chelsea","DEF",102.7],["Josh King","Fulham","MID",115.4],["Tarik Muharemovic","Leeds","DEF",101.5],["Harry Wilson","Leeds","MID",114.9],["Kristoffer Ajer","Brentford","DEF",101.2],["Julio Enciso","Ipswich","MID",113.6],["Ian Maatsen","Aston Villa","DEF",100.8],["Christos Tzolis","Arsenal","MID",112.8],["Ezri Konsa","Arsenal","DEF",100.1],["Adam Wharton","Crystal Palace","MID",112.7],["Aurele Amenda","Coventry","DEF",99.7],["Yeremy Pino","Crystal Palace","MID",112.5],["Trai Hume","Sunderland","DEF",98.9],["Yasin Ayari","Brighton","MID",110.1],["Leif Davis","Ipswich","DEF",98.1],["Matt Grimes","Coventry","MID",109.0],["Pau Torres","Aston Villa","DEF",98.0],["Tyrique George","Everton","MID",108.5],["Micky van de Ven","Spurs","DEF",97.1],["Ibrahim Sangare","Nott'm Forest","MID",107.7],["Sven Botman","Newcastle","DEF",95.7],["Sandro Tonali","Spurs","MID",107.0],["Dara O'Shea","Ipswich","DEF",95.2],["Boubacar Kamara","Aston Villa","MID",106.9],["Jeremy Jacquet","Liverpool","DEF",94.8],["Vitaly Janelt","Brentford","MID",105.1],["Jeremie Frimpong","Liverpool","DEF",93.9],["Iliman Ndiaye","Man City","MID",104.6],["Ousmane Diomande","Nott'm Forest","DEF",93.8],["Youri Tielemans","Man Utd","MID",103.8],["Jay Dasilva","Coventry","DEF",93.8],["Gustavo Hamer","Coventry","MID",101.6],["Mats Wieffer","Brighton","DEF",91.3],["Johan Manzambi","Aston Villa","MID",100.2],["Gabriel Gudmundsson","Leeds","DEF",90.5],["Justin Kluivert","Bournemouth","MID",100.2],["Luke Shaw","Man Utd","DEF",90.5],["Daichi Kamada","Crystal Palace","MID",100.1],["Abdukodir Khusanov","Man City","DEF",89.2],["Mathias Jensen","Brentford","MID",99.4],["William Saliba","Arsenal","DEF",86.9],["Savio","Spurs","MID",99.1],["Sepp van den Berg","Brentford","DEF",85.6],["Eberechi Eze","Arsenal","MID",98.1],["Jacob Greaves","Ipswich","DEF",85.5],["Dan Ndoye","Nott'm Forest","MID",97.5],["Timothy Castagne","Fulham","DEF",84.6],["James McAtee","Nott'm Forest","MID",97.0],["Levi Colwill","Chelsea","DEF",84.5],["Jack Rudoni","Coventry","MID",96.2],["Marco Palestra","Chelsea","DEF",83.4],["Noah Sadiki","Sunderland","MID",95.3],["Juanlu","Bournemouth","DEF",82.9],["Mikkel Damsgaard","Brentford","MID",93.9],["Valentino Livramento","Newcastle","DEF",80.9],["Abdul Fatawu","Ipswich","MID",92.0],["Destiny Udogie","Spurs","DEF",80.4],["Mateus Fernandes","Spurs","MID",91.9],["Ruben Dias","Man City","DEF",79.9],["Nilson Angulo","Sunderland","MID",91.7],["Dan Burn","Newcastle","DEF",79.4],["Amad Diallo","Man Utd","MID",91.6],["John Egan","Hull","DEF",79.2],["Victor Munoz","Liverpool","MID",91.4],["Jaka Bijol","Leeds","DEF",78.9],["Mohammed Kudus","Spurs","MID",90.9],["Omar Alderete","Sunderland","DEF",78.2],["Cesar Palacios","Fulham","MID",90.9],["Wesley Fofana","Chelsea","DEF",78.0],["Emile Smith Rowe","Fulham","MID",89.8],["Ola Aina","Nott'm Forest","DEF",78.0],["Kobbie Mainoo","Man Utd","MID",89.4],["James Justin","Leeds","DEF",77.5],["James Maddison","Spurs","MID",88.2],["Ben White","Arsenal","DEF",76.7],["Sander Berge","Fulham","MID",86.1],["Piero Hincapie","Arsenal","DEF",75.7],["Caleb Yirenkyi","Coventry","MID",85.4],["El Hadji Malick Diouf","Brentford","DEF",74.8],["Hayden Hackney","Everton","MID",85.0],["Joachim Andersen","Fulham","DEF",73.5],["Daizen Maeda","Ipswich","MID",84.4],["Jorrel Hato","Chelsea","DEF",73.4],["Kaoru Mitoma","Brighton","MID",84.4],["Ryan Giles","Hull","DEF",72.6],["Loum Tchaouna","Coventry","MID",84.4],["Conor Bradley","Liverpool","DEF",71.9],["Marcelino Nunez","Ipswich","MID",84.0],["Harry Maguire","Man Utd","DEF",71.6],["Noah Okafor","Leeds","MID",83.6],["Takehiro Tomiyasu","Crystal Palace","DEF",70.5],["Xaver Schlager","Nott'm Forest","MID",83.5],["Charlie Hughes","Hull","DEF",69.8],["Yankuba Minteh","Brighton","MID",82.9],["Lewis Dunk","Brighton","DEF",69.6],["Jaidon Anthony","Brentford","MID",80.0],["Jake O'Brien","Everton","DEF",69.2],["Anthony Elanga","Newcastle","MID",79.6],["Issa Diop","Ipswich","DEF",69.0],["Habib Diarra","Sunderland","MID",79.0],["David Affengruber","Fulham","DEF",68.5],["Malick Fofana","Sunderland","MID",78.8],["Ryan Sessegnon","Fulham","DEF",67.3],["Estevao","Chelsea","MID",78.5],["Axel Disasi","Crystal Palace","DEF",66.3],["Merlin Rohl","Everton","MID",78.1],["Jair Cunha","Nott'm Forest","DEF",65.6],["Nico Gonzalez","Newcastle","MID",78.0],["Matteo Ruggeri","Aston Villa","DEF",64.8],["Tyler Adams","Bournemouth","MID",76.8],["Amar Dedic","Newcastle","DEF",64.5],["Brennan Johnson","Everton","MID",76.5],["Ethan Pinnock","Coventry","DEF",63.8],["Brenden Aaronson","Leeds","MID",76.4],["Nobel Mendy","Hull","DEF",62.8],["Mathys Tel","Spurs","MID",76.3],["Andrew Robertson","Spurs","DEF",61.4],["Pedro Neto","Chelsea","MID",75.5],["Kenny Tete","Fulham","DEF",60.8],["Joao Gomes","Aston Villa","MID",73.2],["Malo Gusto","Chelsea","DEF",60.5],["Matt Crooks","Hull","MID",73.2],["Elliot Stroud","Hull","DEF",60.4],["Ibrahim Mbaye","Aston Villa","MID",73.0],["Ronald Araujo","Liverpool","DEF",59.9],["Joe Gelhardt","Hull","MID",72.4],["Reinildo","Sunderland","DEF",59.3],["Oscar Bobb","Fulham","MID",72.0],["Oscar Mingueza","Crystal Palace","DEF",58.4],["Ephron Mason-Clark","Coventry","MID",71.6],["Ayden Heaven","Man Utd","DEF",57.6],["Ryan Christie","Bournemouth","MID",71.2],["Thomas Meunier","Sunderland","DEF",57.0],["Mikel Merino","Arsenal","MID",69.0],["Cristhian Mosquera","Arsenal","DEF",55.1],["Kevin","Fulham","MID",67.8],["Jaouen Hadjam","Brighton","DEF",53.1],["Sasa Lukic","Ipswich","MID",67.3],["Pep Chavarria","Chelsea","DEF",52.8],["Regan Slater","Hull","MID",66.3],["Semi Ajayi","Hull","DEF",52.0],["Mohamed-Ali Cho","Hull","MID",66.2],["Dayann Methalie","Sunderland","DEF",51.5],["Leon Goretzka","Aston Villa","MID",66.0],["Bafode Diakite","Bournemouth","DEF",51.1],["Frank Onyeka","Coventry","MID",65.1],["Josh Acheampong","Chelsea","DEF",50.9],["Harrison Armstrong","Everton","MID",63.2],["Pascal Struijk","Brighton","DEF",50.1],["Patrick Dorgu","Man Utd","MID",61.7],["Nico Elvedi","Leeds","DEF",49.6],["Shea Charles","Fulham","MID",60.9],["Aaron Wan-Bissaka","Aston Villa","DEF",46.5],["Ayyoub Bouaddi","Man City","MID",60.6],["Leny Yoro","Man Utd","DEF",46.5],["Tyler Dibling","Everton","MID",60.3],["Lewie Coyle","Hull","DEF",45.7],["Keane Lewis-Potter","Brentford","MID",60.0],["Honest Ahanor","Crystal Palace","DEF",42.7],["Rodrigo Bentancur","Spurs","MID",59.8],["Adam Smith","Bournemouth","DEF",42.2],["Alejandro Garnacho","Aston Villa","MID",59.4],["Melvin Bard","Leeds","DEF",39.0],["Romeo Lavia","Chelsea","MID",59.4],["Abdoul Ouattara","Ipswich","DEF",38.6],["Carlos Baleba","Man Utd","MID",59.4],["Noussair Mazraoui","Man Utd","DEF",38.0],["Noni Madueke","Arsenal","MID",58.7],["Fabian Schar","Newcastle","DEF",36.5],["Tatsuhiro Sakamoto","Coventry","MID",56.2],["Victor Lindelof","Aston Villa","DEF",35.5],["Jens Hjerto-Dahl","Hull","MID",56.1],["Veljko Milosavljevic","Bournemouth","DEF",34.6],["Joelinton","Newcastle","MID",56.0],["Kevin Danso","Sunderland","DEF",34.4],["Valentin Barco","Chelsea","MID",55.8],["Kostas Tsimikas","Liverpool","DEF",31.9],["Dwight McNeil","Crystal Palace","MID",54.7],["Tyrone Mings","Aston Villa","DEF",29.0],["Rio Ngumoha","Liverpool","MID",53.8],["Giovanni Leoni","Liverpool","DEF",28.4],["Florentino Luis","Ipswich","MID",53.5],["Darnell Furlong","Ipswich","DEF",27.1],["Bazoumana Toure","Newcastle","MID",53.3],["Matthijs De Ligt","Man Utd","DEF",26.7],["Azor Matusiwa","Ipswich","MID",52.7],["Matt Targett","Hull","DEF",26.5],["Sean Steur","Newcastle","MID",52.7],["Aaron Hickey","Brentford","DEF",26.1],["Lucas Gourna-Douath","Hull","MID",52.3],["Brooke Norton-Cuffy","Hull","DEF",25.7],["Exequiel Palacios","Ipswich","MID",52.3],["Lucas Herrington","Hull","DEF",25.1],["Tim Iroegbunam","Hull","MID",50.7],["Jorge Cuenca","Fulham","DEF",24.1],["Callum Hudson-Odoi","Nott'm Forest","MID",48.7],["Michael Keane","Everton","DEF",23.8],["Yehor Yarmolyuk","Brentford","MID",47.4],["Rayan Ait-Nouri","Man City","DEF",22.5],["Myles Lewis-Skelly","Arsenal","MID",47.4],["Rico Lewis","Man City","DEF",21.3],["Ross Barkley","Aston Villa","MID",47.0],["Cedric Kipre","Ipswich","DEF",21.1],["Amine Adli","Bournemouth","MID",46.6],["Ben Chilwell","Crystal Palace","DEF",20.0],["Dejan Kulusevski","Spurs","MID",46.5],["Joe Gomez","Liverpool","DEF",19.6],["Christian Norgaard","Everton","MID",46.4],["Luca Netz","Nott'm Forest","DEF",17.4],["Evann Guessand","Crystal Palace","MID",45.3],["Tosin Adarabioyo","Spurs","DEF",17.1],["Chemsdine Talbi","Sunderland","MID",44.5],["Luke Woolfenden","Coventry","DEF",16.0],["Hugo Larsson","Fulham","MID",44.0],["Jake Bidwell","Coventry","DEF",15.4],["Ao Tanaka","Leeds","MID",43.7],["Joel Latibeaudiere","Coventry","DEF",14.8],["Lewis Cook","Bournemouth","MID",43.4],["Jack Clarke","Ipswich","MID",43.2],["Archie Gray","Spurs","MID",40.5],["Jean-Matteo Bahoya","Leeds","MID",40.3],["Dario Osorio","Crystal Palace","MID",38.6],["Mateo Kovacic","Man City","MID",38.6],["Quinten Timber","Crystal Palace","MID",38.6],["Jacob Ramsey","Newcastle","MID",37.5],["Joe Willock","Newcastle","MID",36.9],["Chema","Brighton","MID",36.9],["Hidemasa Morita","Hull","MID",36.7],["Nicolas Dominguez","Nott'm Forest","MID",36.0],["Alysson","Aston Villa","MID",35.9],["Chris Rigg","Sunderland","MID",35.4],["Kasey McAteer","Ipswich","MID",35.2],["David Brooks","Bournemouth","MID",35.2],["Lamare Bogarde","Aston Villa","MID",35.1],["Jaden Philogene","Ipswich","MID",34.8],["Jacob Murphy","Newcastle","MID",34.3],["Manuel Angel","Fulham","MID",34.3],["Andrey Santos","Man Utd","MID",33.7],["Sorba Thomas","Hull","MID",33.2],["Victor Torp","Coventry","MID",31.5],["Christos Mouzakitis","Hull","MID",30.4],["Ryan Yates","Nott'm Forest","MID",30.3],["Mason Mount","Man Utd","MID",29.7],["George Hemmings","Aston Villa","MID",28.6],["Aladji Bamba","Newcastle","MID",28.4],["Martin Zubimendi","Arsenal","MID",28.0],["Conor Gallagher","Spurs","MID",26.6],["Gabriel Martinelli","Arsenal","MID",25.2],["Sean Longstaff","Leeds","MID",24.3],["Ben Gannon Doak","Bournemouth","MID",22.9],["Femi Azeez","Brighton","MID",22.6],["Carlos Alcaraz","Everton","MID",22.1],["Mykhailo Mudryk","Spurs","MID",21.7],["Geovany Quenda","Chelsea","MID",21.4],["Ibrahim Osman","Brighton","MID",21.1],["Jamie Gittens","Chelsea","MID",20.7],["Xavi Simons","Spurs","MID",20.0],["Lucas Bergvall","Spurs","MID",19.9],["Josh Eccles","Coventry","MID",19.7],["Antoni Milambo","Brentford","MID",19.6],["Ilia Gruev","Leeds","MID",19.4],["Jocelin Ta Bi","Sunderland","MID",18.5],["Wataru Endo","Liverpool","MID",17.9],["Alex Toth","Bournemouth","MID",16.8],["Jefferson Lerma","Crystal Palace","MID",16.4],["Daniel James","Leeds","MID",15.9],["Will Hughes","Crystal Palace","MID",15.2]];   // [name, club, pos, projPts]
+const FX = {"fx":[["ARS","LIV (A)","HUL (H)","NEW (A)","MCI (H)"],["AVL","FUL (H)","MUN (A)","SUN (H)","IPS (A)"],["BOU","LEE (H)","IPS (A)","NFO (H)","FUL (A)"],["BRE","NFO (H)","BHA (A)","EVE (H)","MUN (A)"],["BHA","MCI (A)","BRE (H)","HUL (A)","NEW (H)"],["CHE","MUN (H)","SUN (A)","LEE (H)","NFO (A)"],["COV","SUN (H)","EVE (A)","CRY (H)","LEE (A)"],["CRY","TOT (A)","LIV (H)","COV (A)","HUL (H)"],["EVE","NEW (A)","COV (H)","BRE (A)","LIV (H)"],["FUL","AVL (A)","NEW (H)","MCI (A)","BOU (H)"],["HUL","IPS (H)","ARS (A)","BHA (H)","CRY (A)"],["IPS","HUL (A)","BOU (H)","TOT (A)","AVL (H)"],["LEE","BOU (A)","TOT (H)","CHE (A)","COV (H)"],["LIV","ARS (H)","CRY (A)","MUN (H)","EVE (A)"],["MCI","BHA (H)","NFO (A)","FUL (H)","ARS (A)"],["MUN","CHE (A)","AVL (H)","LIV (A)","BRE (H)"],["NEW","EVE (H)","FUL (A)","ARS (H)","BHA (A)"],["NFO","BRE (A)","MCI (H)","BOU (A)","CHE (H)"],["TOT","CRY (H)","LEE (A)","IPS (H)","SUN (A)"],["SUN","COV (A)","CHE (H)","AVL (A)","TOT (H)"]],"codes":{"Arsenal":"ARS","Aston Villa":"AVL","Bournemouth":"BOU","Brentford":"BRE","Brighton":"BHA","Chelsea":"CHE","Coventry":"COV","Crystal Palace":"CRY","Everton":"EVE","Fulham":"FUL","Hull":"HUL","Ipswich":"IPS","Leeds":"LEE","Liverpool":"LIV","Man City":"MCI","Man Utd":"MUN","Newcastle":"NEW","Nott'm Forest":"NFO","Spurs":"TOT","Sunderland":"SUN"}};
+let KICKOFF = Date.UTC(2026, 10, 1, 0, 0, 0); // 1 Nov 2026, 00:00 UK time (GMT); the server can override this
+const FORMATION = ["GK","DEF","DEF","DEF","DEF","MID","MID","MID","MID","ATT","ATT"];
+const ROWS = [[9,10],[5,6,7,8],[1,2,3,4],[0]];
+const POSNAME = {GK:"goalkeeper",DEF:"defender",MID:"midfielder",ATT:"forward"};
+const CODE = FX.codes;
+const key = p => p[0] + "|" + p[1];
+const byKey = new Map(PLAYERS.map(p => [key(p), p]));
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const started = () => Date.now() >= KICKOFF;
+const surname = n => { const parts = n.split(" "); return parts.length > 1 && n.length > 12 ? parts.slice(1).join(" ") : n; };
+
+let state = { picks: Array(11).fill(null), captain: "", teamName: "", playerName: "" };
+const TOKEN_KEY = "mff_edit_token";
+let ctx = { token: null, myId: null, admin: null, hasEntry: false, entries: [], scores: {}, online: false };
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+async function api(path, opts = {}) {
+  const res = await fetch(path, { ...opts, headers: { "content-type": "application/json", ...(opts.headers || {}) } });
+  let data = {}; try { data = await res.json(); } catch (e) {}
+  if (!res.ok) { const err = new Error(data.error || "Something went wrong."); err.status = res.status; throw err; }
+  return data;
+}
+const editLink = () => ctx.token ? location.origin + location.pathname + "#edit=" + ctx.token : "";
+let dirty = false, tried = false;
+
+/* ---------- tabs ---------- */
+const TABS = ["enter","league","fixtures","rules","scores"];
+function showTab(name, push) {
+  if (!TABS.includes(name) || ($("t-" + name).hidden)) name = "enter";
+  TABS.forEach(t => { $(t).hidden = t !== name; $("t-" + t).setAttribute("aria-selected", t === name); });
+  if (push) { try { history.replaceState(null, "", "#" + name); } catch (e) {} }
+  if (name === "scores") renderScores();
+  if (name === "fixtures") renderFixtures();
+}
+TABS.forEach(t => $("t-" + t).addEventListener("click", () => showTab(t, true)));
+
+/* ---------- clock ---------- */
+function tickClock() {
+  const ms = KICKOFF - Date.now();
+  if (ms <= 0) { $("clock").innerHTML = `<span class="num">Game on</span><span class="lbl">Entries closed. Squads are revealed in the league.</span>`; return false; }
+  const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
+  const pad = n => String(n).padStart(2, "0");
+  $("clock").innerHTML = `<span class="num">${d}d ${pad(h)}:${pad(m)}:${pad(s)}</span><span class="lbl">until squads lock and are revealed on 1 November</span>`;
+  return true;
+}
+let wasStarted = started();
+tickClock();
+setInterval(() => { tickClock(); if (!wasStarted && started()) { wasStarted = true; onKickoff(); } }, 1000);
+
+/* ---------- pitch ---------- */
+const SHIRT = `<svg viewBox="0 0 52 50" aria-hidden="true"><path class="body" d="M17 3 L8 6 L1 15 L8 21 L11 18 L11 47 L41 47 L41 18 L44 21 L51 15 L44 6 L35 3 C33 8 30 10 26 10 C22 10 19 8 17 3Z"/></svg>`;
+function renderPitch() {
+  const locked = started();
+  $("pitch").innerHTML = ROWS.map(r => `<div class="row">${r.map(i => {
+    const p = state.picks[i] ? byKey.get(state.picks[i]) : null;
+    const cap = p && state.captain === state.picks[i];
+    const label = p ? `${FORMATION[i]}: ${p[0]}, ${p[1]}${cap ? ", captain" : ""}. ${locked ? "" : "Change player"}` : `Pick a ${POSNAME[FORMATION[i]]}`;
+    return `<button class="slot ${p ? "filled" : ""} ${cap ? "cap" : ""}" data-i="${i}" ${locked ? "disabled" : ""} aria-label="${esc(label)}">
+      <span class="shirt">${SHIRT}<span class="code">${p ? esc(CODE[p[1]] || "") : "+"}</span><span class="armband">C</span></span>
+      <span class="pname">${p ? esc(surname(p[0])) : FORMATION[i]}</span>
+      ${p ? `<span class="ppos">${FORMATION[i]}</span>` : ""}
+    </button>`;
+  }).join("")}</div>`).join("");
+  $("pitch").querySelectorAll(".slot").forEach(b => b.addEventListener("click", () => openPicker(+b.dataset.i)));
+  renderCaptain(); renderChecks();
+}
+function renderCaptain() {
+  const sel = $("captain");
+  const picked = state.picks.filter(Boolean);
+  if (state.captain && !picked.includes(state.captain)) state.captain = "";
+  sel.innerHTML = `<option value="">Pick from your eleven</option>` + picked.map(k => {
+    const p = byKey.get(k); return `<option value="${esc(k)}" ${k === state.captain ? "selected" : ""}>${esc(p[0])} (${esc(p[1])})</option>`;
+  }).join("");
+  sel.disabled = started() || picked.length === 0;
+}
+$("captain").addEventListener("change", e => { state.captain = e.target.value; dirty = true; renderPitch(); });
+
+function problems() {
+  const out = [];
+  const tn = $("teamName").value.trim(), pn = $("playerName").value.trim();
+  const n = state.picks.filter(Boolean).length;
+  const clubs = state.picks.filter(Boolean).map(k => byKey.get(k)[1]);
+  const dupe = clubs.length !== new Set(clubs).size;
+  return [
+    { ok: !!tn, text: "Team name entered" },
+    { ok: !!pn, text: "Your name entered" },
+    { ok: n === 11, text: n === 11 ? "All 11 players picked" : `${11 - n} player${11 - n === 1 ? "" : "s"} still to pick` },
+    { ok: !dupe, text: "One player per club" },
+    { ok: !!state.captain, text: "Captain chosen" },
+  ];
+}
+function renderChecks() {
+  const list = problems();
+  $("checks").innerHTML = list.map(c => `<li class="${c.ok ? "ok" : ""}">${esc(c.text)}</li>`).join("");
+  const allOk = list.every(c => c.ok);
+  const btn = $("save");
+  btn.hidden = started();
+  btn.textContent = ctx.hasEntry ? "Save changes" : "Lock in my team";
+  btn.disabled = !allOk || !ctx.online;
+  $("teamName").setAttribute("aria-invalid", !$("teamName").value.trim() && tried);
+  $("playerName").setAttribute("aria-invalid", !$("playerName").value.trim() && tried);
+}
+["teamName","playerName"].forEach(id => $(id).addEventListener("input", () => { dirty = true; renderChecks(); }));
+
+/* ---------- picker ---------- */
+let pickSlot = -1;
+const clubs = [...new Set(PLAYERS.map(p => p[1]))].sort();
+$("pickClub").innerHTML += clubs.map(c => `<option>${esc(c)}</option>`).join("");
+function openPicker(i) {
+  if (started()) return;
+  pickSlot = i;
+  $("pickTitle").textContent = "Pick a " + POSNAME[FORMATION[i]];
+  $("pickSearch").value = ""; $("pickClub").value = "";
+  $("pickClear").hidden = !state.picks[i];
+  renderPickList();
+  $("picker").showModal();
+  setTimeout(() => $("pickSearch").focus(), 30);
+}
+function renderPickList() {
+  const pos = FORMATION[pickSlot];
+  const q = $("pickSearch").value.trim().toLowerCase();
+  const club = $("pickClub").value;
+  const usedClubs = new Map();
+  state.picks.forEach((k, j) => { if (k && j !== pickSlot) usedClubs.set(byKey.get(k)[1], byKey.get(k)[0]); });
+  const inTeam = new Set(state.picks.filter((k, j) => k && j !== pickSlot));
+  const list = PLAYERS.filter(p => p[2] === pos && (!club || p[1] === club) && (!q || p[0].toLowerCase().includes(q) || p[1].toLowerCase().includes(q)))
+    .sort((a, b) => b[3] - a[3]);
+  $("pickList").innerHTML = list.length ? list.map(p => {
+    const k = key(p);
+    const why = inTeam.has(k) ? "Already in your team" : usedClubs.has(p[1]) ? `You already have ${usedClubs.get(p[1])} from ${p[1]}` : "";
+    return `<button class="opt ${state.picks[pickSlot] === k ? "sel" : ""}" data-k="${esc(k)}" ${why ? "disabled" : ""}>
+      <span class="c">${esc(CODE[p[1]] || "")}</span>
+      <span><span class="n">${esc(p[0])}</span>${why ? `<span class="why">${esc(why)}</span>` : ""}</span>
+      <span class="pts">${p[3].toFixed(0)} pts</span></button>`;
+  }).join("") : `<div class="empty">No ${POSNAME[pos]}s match. Try another search or club.</div>`;
+  $("pickList").querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    const old = state.picks[pickSlot];
+    state.picks[pickSlot] = b.dataset.k;
+    if (state.captain === old) state.captain = "";
+    dirty = true; $("picker").close(); renderPitch();
+  }));
+}
+$("pickSearch").addEventListener("input", renderPickList);
+$("pickClub").addEventListener("change", renderPickList);
+$("pickClose").addEventListener("click", () => $("picker").close());
+$("pickClear").addEventListener("click", () => {
+  if (state.captain === state.picks[pickSlot]) state.captain = "";
+  state.picks[pickSlot] = null; dirty = true; $("picker").close(); renderPitch();
+});
+$("picker").addEventListener("click", e => { if (e.target === $("picker")) $("picker").close(); });
+
+/* ---------- status ---------- */
+function renderStatus() {
+  let html = "";
+  if (!ctx.online) {
+    html = `<div class="note bad"><strong>Can’t reach the league server.</strong><p>Check your connection and reload the page.</p></div>`;
+  } else if (started()) {
+    html = ctx.hasEntry
+      ? `<div class="note good"><strong>Your team is locked in.</strong><p>Entries closed on 1 November. Follow the scores in the league.</p></div>`
+      : `<div class="note warn"><strong>Entries are closed.</strong><p>The game started on 1 November. You can still follow the league.</p></div>`;
+  } else if (ctx.hasEntry) {
+    html = `<div class="note good"><strong>You’re in.</strong><p>Your squad is hidden from everyone until 1 November. You can make changes on this device until then.</p>
+      <p style="margin-top:10px;font-size:14px"><strong>Your private edit link.</strong> Save it to change your team from another phone or computer. Don’t share it.</p>
+      <div style="display:flex;gap:8px;margin-top:6px"><input type="text" readonly id="editLink" value="${esc(editLink())}" aria-label="Your private edit link" style="margin:0;font-size:13px"><button class="ghost" id="copyLink" type="button">Copy</button></div></div>`;
+  } else {
+    html = `<div class="note"><strong>Enter your team by 1 November.</strong><p>Tap each shirt to pick a player, choose a captain, then lock in. Nobody sees your squad until kickoff. Entry is $20: $10 to Movember and $10 to the prize pool.</p></div>`;
+  }
+  $("status").innerHTML = html;
+  const cl = $("copyLink");
+  if (cl) cl.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(editLink()); toast("Edit link copied"); }
+    catch (e) { $("editLink").select(); toast("Select the link and copy it"); }
+  });
+  const lockInputs = started() || !ctx.online;
+  $("teamName").disabled = lockInputs; $("playerName").disabled = lockInputs;
+}
+
+/* ---------- save ---------- */
+$("save").addEventListener("click", async () => {
+  $("saveErr").textContent = "";
+  dirty = true; tried = true;
+  if (started()) { $("saveErr").textContent = "Entries closed on 1 November."; return; }
+  if (!problems().every(c => c.ok)) { renderChecks(); return; }
+  const btn = $("save"); btn.disabled = true; btn.textContent = "Saving…";
+  try {
+    const data = await api("/api/entry", { method: "POST", body: JSON.stringify({
+      token: ctx.token, teamName: $("teamName").value.trim(), playerName: $("playerName").value.trim(),
+      picks: state.picks, captain: state.captain }) });
+    const wasEntry = ctx.hasEntry;
+    ctx.token = data.token; ctx.myId = data.entry.id; store.set(TOKEN_KEY, data.token);
+    ctx.hasEntry = true; dirty = false;
+    toast(wasEntry ? "Changes saved" : "Team locked in");
+    renderStatus(); loadLeague();
+  } catch (e) {
+    $("saveErr").textContent = e.status ? e.message : "Your team didn’t save. Check your connection and try again.";
+  }
+  renderChecks();
+});
+
+/* ---------- league ---------- */
+function teamScore(picks, captain) {
+  const gw = [0,0,0,0];
+  (picks || []).forEach(k => {
+    const s = ctx.scores[k]; if (!s) return;
+    const mult = k === captain ? 2 : 1;
+    for (let i = 0; i < 4; i++) gw[i] += (+s[i] || 0) * mult;
+  });
+  return { gw, total: gw.reduce((a, b) => a + b, 0) };
+}
+function renderLeague() {
+  const live = started();
+  const rows = ctx.entries.map(e => {
+    const sc = e.picks ? teamScore(e.picks, e.captain) : { gw: [0,0,0,0], total: 0 };
+    return { ...e, sc };
+  });
+  if (live) rows.sort((a, b) => b.sc.total - a.sc.total || b.sc.gw[3] - a.sc.gw[3] || b.sc.gw[2] - a.sc.gw[2] || b.sc.gw[1] - a.sc.gw[1] || b.sc.gw[0] - a.sc.gw[0] || a.teamName.localeCompare(b.teamName));
+  else rows.sort((a, b) => (a.joinedAt || "").localeCompare(b.joinedAt || ""));
+  const n = rows.length;
+  const pool = `<div class="note good" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><strong>Prize pool</strong><p style="margin:2px 0 0">$10 from each $20 entry. Another $${(n * 10).toLocaleString("en-US")} raised for Movember.</p></div><span class="cond" style="font-size:36px;font-weight:800;line-height:1">$${(n * 10).toLocaleString("en-US")}</span></div>`;
+  $("poolLine").textContent = n ? `With ${n} team${n === 1 ? "" : "s"} entered, the pool is currently $${(n * 10).toLocaleString("en-US")}.` : "";
+  $("leagueHead").innerHTML = pool + (live
+    ? `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"}. Points include captain double. Ties are decided by GW12, then GW11, GW10 and GW9; if still level, the prize is shared.</p>`
+    : `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"} entered so far. Squads are revealed when the game starts on 1 November.</p>`);
+  if (!n) { $("leagueList").innerHTML = `<div class="empty">No teams yet. Be the first to enter from the My team tab.</div>`; return; }
+  let rank = 0, prev = null;
+  $("leagueList").innerHTML = rows.map((e, idx) => {
+    if (live) { const sig = e.sc.total + "|" + [3,2,1,0].map(g => e.sc.gw[g]).join("|"); if (sig !== prev) rank = idx + 1; prev = sig; }
+    const me = e.id === ctx.myId;
+    const right = live
+      ? `<div class="tot">${e.sc.total}<small>points</small></div>`
+      : `<span class="lock"><svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><rect x="1" y="7" width="12" height="8" rx="2" fill="currentColor"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" fill="none"/></svg>Squad hidden</span>`;
+    let sqHtml = "";
+    if (live && e.picks) {
+      sqHtml = `<details class="sq"><summary>Show squad</summary><div class="scroll"><table class="sqt"><thead><tr><th>Pos</th><th>Player</th><th class="r">GW9</th><th class="r">10</th><th class="r">11</th><th class="r">12</th></tr></thead><tbody>${
+        e.picks.map((k, i) => { const p = byKey.get(k) || [k.split("|")[0], k.split("|")[1]]; const s = ctx.scores[k] || []; const m = k === e.captain ? 2 : 1;
+          return `<tr><td>${FORMATION[i]}</td><td>${esc(p[0])} <span class="sub" style="font-size:12px">${esc(CODE[p[1]] || p[1])}</span>${m === 2 ? `<span class="cbadge">C</span>` : ""}</td>${[0,1,2,3].map(g => `<td class="r">${s[g] == null || s[g] === "" ? "–" : (+s[g]) * m}</td>`).join("")}</tr>`; }).join("")
+      }<tr><th colspan="2">Team</th>${e.sc.gw.map(v => `<th class="r">${v}</th>`).join("")}</tr></tbody></table></div></details>`;
+    } else if (live) {
+      sqHtml = `<p class="sub" style="font-size:14px;margin:8px 0 0">Squad not revealed yet.</p>`;
+    }
+    const del = ctx.admin ? `<button class="ghost" data-del="${esc(e.id)}" style="margin-top:8px;font-size:13px;padding:5px 10px">Remove entry</button>` : "";
+    return `<div class="entry ${me ? "me" : ""}"><div class="hd">${live ? `<span class="rank">${rank}</span>` : ""}<div class="who"><div class="tn">${esc(e.teamName)}${me ? ` <span class="cbadge" style="background:var(--ink);color:var(--bg)">You</span>` : ""}</div><div class="mn">${esc(e.playerName)}</div></div>${right}</div>${sqHtml}${del}</div>`;
+  }).join("");
+  $("leagueList").querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+    const e = ctx.entries.find(x => x.id === b.dataset.del);
+    if (!confirm(`Remove ${e?.teamName || "this entry"}? This can’t be undone.`)) return;
+    try { await api("/api/admin?id=" + encodeURIComponent(b.dataset.del), { method: "DELETE", headers: { "x-admin-password": ctx.admin } }); toast("Entry removed"); loadLeague(); }
+    catch (err) { toast(err.message || "Couldn’t remove that entry"); }
+  }));
+}
+
+/* ---------- league data ---------- */
+async function loadLeague() {
+  try {
+    const data = await api("/api/league");
+    ctx.online = true;
+    if (data.kickoff && !isNaN(Date.parse(data.kickoff))) KICKOFF = Date.parse(data.kickoff);
+    ctx.entries = data.entries || [];
+    ctx.scores = data.scores || {};
+    if (ctx.myId && !ctx.entries.some(e => e.id === ctx.myId) && ctx.hasEntry) {
+      // The organiser removed this entry.
+      ctx.hasEntry = false; ctx.token = null; ctx.myId = null; store.set(TOKEN_KEY, "");
+    }
+  } catch (e) { ctx.online = false; }
+  renderStatus(); renderLeague(); renderChecks();
+  if (!$("scores").hidden && !scoreDraft) renderScores();
+}
+function onKickoff() { renderStatus(); renderPitch(); loadLeague(); }
+
+/* ---------- organiser scores ---------- */
+function pickedPlayers() {
+  const set = new Set();
+  ctx.entries.forEach(e => (e.picks || []).forEach(k => set.add(k)));
+  return [...set].map(k => byKey.get(k) || [k.split("|")[0], k.split("|")[1], "?"]).sort((a, b) => ["GK","DEF","MID","ATT"].indexOf(a[2]) - ["GK","DEF","MID","ATT"].indexOf(b[2]) || a[0].localeCompare(b[0]));
+}
+let scoreDraft = null;
+function renderScores() {
+  if (!ctx.admin) return;
+  if (!started()) { $("scoreGrid").innerHTML = `<tr><td class="empty">Scores open once the game starts on 1 November and squads are revealed.</td></tr>`; $("saveScores").disabled = true; return; }
+  if (!scoreDraft) scoreDraft = JSON.parse(JSON.stringify(ctx.scores || {}));
+  const q = $("scoreSearch").value.trim().toLowerCase();
+  const list = pickedPlayers().filter(p => !q || p[0].toLowerCase().includes(q) || p[1].toLowerCase().includes(q));
+  $("saveScores").disabled = false;
+  $("scoreGrid").innerHTML = `<thead><tr><th>Player</th><th>Club</th><th>GW9</th><th>GW10</th><th>GW11</th><th>GW12</th></tr></thead><tbody>${
+    list.length ? list.map(p => { const k = key(p); const s = scoreDraft[k] || []; return `<tr><td>${esc(p[0])} <span class="sub" style="font-size:12px">${esc(p[2])}</span></td><td>${esc(CODE[p[1]] || p[1])}</td>${[0,1,2,3].map(g => `<td><input type="number" inputmode="numeric" step="1" data-k="${esc(k)}" data-g="${g}" value="${s[g] ?? ""}" aria-label="${esc(p[0])} GW${9 + g}"></td>`).join("")}</tr>`; }).join("")
+    : `<tr><td colspan="6" class="empty">No revealed squads yet.</td></tr>`}</tbody>`;
+  $("scoreGrid").querySelectorAll("input").forEach(inp => inp.addEventListener("input", () => {
+    const k = inp.dataset.k, g = +inp.dataset.g;
+    scoreDraft[k] = scoreDraft[k] || [null, null, null, null];
+    scoreDraft[k][g] = inp.value === "" ? null : Math.round(+inp.value);
+    $("scoreMsg").textContent = "Unsaved changes";
+  }));
+}
+$("scoreSearch").addEventListener("input", renderScores);
+$("saveScores").addEventListener("click", async () => {
+  if (!scoreDraft) return;
+  $("saveScores").disabled = true;
+  try { await api("/api/scores", { method: "POST", headers: { "x-admin-password": ctx.admin }, body: JSON.stringify({ pts: scoreDraft }) }); $("scoreMsg").textContent = "Saved"; toast("Scores saved"); loadLeague(); }
+  catch (e) { $("scoreMsg").textContent = e.message || "Scores didn’t save. Try again."; }
+  $("saveScores").disabled = false;
+});
+
+/* ---------- fixtures table ---------- */
+const GWS = [
+  { n: 9, d: "31 Oct", t: Date.UTC(2026, 9, 31) },
+  { n: 10, d: "6 Nov", t: Date.UTC(2026, 10, 6) },
+  { n: 11, d: "21 Nov", t: Date.UTC(2026, 10, 21) },
+  { n: 12, d: "27 Nov", t: Date.UTC(2026, 10, 27) },
+];
+const CLUBNAME = Object.fromEntries(Object.entries(CODE).map(([n, c]) => [c, n]));
+function matchesFor(g) {
+  const out = [];
+  FX.fx.forEach(r => { const m = /^(\w+) \((H|A)\)$/.exec(r[g + 1] || ""); if (m && m[2] === "H") out.push([r[0], m[1]]); });
+  return out.sort((a, b) => (CLUBNAME[a[0]] || a[0]).localeCompare(CLUBNAME[b[0]] || b[0]));
+}
+let gwSel = Math.max(0, GWS.findIndex(g => Date.now() < g.t + 3 * 864e5));
+if (Date.now() >= GWS[3].t + 3 * 864e5) gwSel = 3;
+function renderFixtures() {
+  $("gwPick").innerHTML = GWS.map((g, i) => `<button aria-pressed="${i === gwSel}" data-g="${i}"><b>GW${g.n}</b><span>${g.d}</span></button>`).join("");
+  $("gwPick").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { gwSel = +b.dataset.g; renderFixtures(); }));
+  const mine = {};
+  state.picks.forEach(k => { if (!k) return; const p = byKey.get(k); const c = CODE[p[1]]; (mine[c] = mine[c] || []).push(surname(p[0])); });
+  const g = GWS[gwSel];
+  const side = (c, cls) => `<div class="${cls}"><span class="club">${esc(CLUBNAME[c] || c)}</span>${mine[c] ? `<span class="mine">${esc(mine[c].join(", "))}</span>` : ""}</div>`;
+  const any = Object.keys(mine).length;
+  $("gwBody").innerHTML = `<h2 class="gwhead">Gameweek ${g.n}</h2><p class="sub" style="margin:0">From ${g.d}. Home team first.${any ? " Your players are shown under their club." : ""}</p>
+    <ul class="matches">${matchesFor(gwSel).map(([h, a]) => `<li class="match">${side(h, "home")}<span class="v">v</span>${side(a, "away")}</li>`).join("")}</ul>`;
+}
+
+let toastT;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200); }
+
+/* ---------- organiser login ---------- */
+async function organiserLogin() {
+  const pw = prompt("Organiser password");
+  if (!pw) return;
+  try {
+    await api("/api/admin", { headers: { "x-admin-password": pw } });
+    ctx.admin = pw; try { sessionStorage.setItem("mff_admin", pw); } catch (e) {}
+    $("t-scores").hidden = false; $("orgLogin").textContent = "Organiser mode on";
+    renderLeague(); showTab("scores", true); toast("Organiser mode on");
+  } catch (e) { alert(e.message); }
+}
+$("orgLogin").addEventListener("click", organiserLogin);
+
+/* ---------- boot ---------- */
+(async function boot() {
+  // A private edit link (#edit=TOKEN) restores someone's team on a new device.
+  const m = /^#edit=([a-f0-9]{40})$/.exec(location.hash || "");
+  if (m) { store.set(TOKEN_KEY, m[1]); try { history.replaceState(null, "", location.pathname); } catch (e) {} }
+  ctx.token = store.get(TOKEN_KEY) || null;
+
+  try {
+    const saved = sessionStorage.getItem("mff_admin");
+    if (saved) { ctx.admin = saved; $("t-scores").hidden = false; $("orgLogin").textContent = "Organiser mode on"; }
+  } catch (e) {}
+
+  ctx.online = true;
+  renderStatus(); renderPitch(); renderLeague();
+  showTab((location.hash || "").slice(1) || "enter");
+
+  if (ctx.token) {
+    try {
+      const { entry } = await api("/api/entry", { headers: { "x-entry-token": ctx.token } });
+      ctx.myId = entry.id; ctx.hasEntry = true;
+      state.picks = Array.from({ length: 11 }, (_, i) => entry.picks?.[i] || null);
+      state.captain = entry.captain || "";
+      $("teamName").value = entry.teamName || ""; $("playerName").value = entry.playerName || "";
+      if (m) toast("Your team is loaded");
+    } catch (e) {
+      if (e.status === 404) { ctx.token = null; store.set(TOKEN_KEY, ""); if (m) toast("That edit link didn’t match a team"); }
+    }
+  }
+  renderPitch();
+  await loadLeague();
+  setInterval(loadLeague, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) loadLeague(); });
+})();
+</script>
+</body>
+</html>
