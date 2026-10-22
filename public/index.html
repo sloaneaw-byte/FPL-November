@@ -225,6 +225,7 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
   <section id="league" role="tabpanel" aria-labelledby="t-league" hidden>
     <div id="leagueHead"></div>
     <div class="league" id="leagueList"></div>
+    <div id="leagueFoot" style="margin-top:16px"></div>
   </section>
 
   <section id="fixtures" role="tabpanel" aria-labelledby="t-fixtures" hidden>
@@ -251,7 +252,7 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
     </ul>
     <h2>Prize</h2>
     <ul>
-      <li>The team with the highest points total across GW9 to GW12 wins the total prize pool. <span id="poolLine"></span></li>
+      <li>The team with the highest points total across GW9 to GW12 wins the whole prize pool — winner takes all. <span id="poolLine"></span></li>
       <li>If there’s a tie for first place, the highest scorer in GW12 wins. If it’s still a draw, the highest score in GW11, then GW10, then GW9 decides it, whichever produces a winner first. If it’s still a draw after that, the prize is shared.</li>
       <li>A league table goes round after the final match of each gameweek.</li>
     </ul>
@@ -514,9 +515,11 @@ function renderLeague() {
   if (live) rows.sort((a, b) => b.sc.total - a.sc.total || b.sc.gw[3] - a.sc.gw[3] || b.sc.gw[2] - a.sc.gw[2] || b.sc.gw[1] - a.sc.gw[1] || b.sc.gw[0] - a.sc.gw[0] || a.teamName.localeCompare(b.teamName));
   else rows.sort((a, b) => (a.joinedAt || "").localeCompare(b.joinedAt || ""));
   const n = rows.length;
-  const pool = `<div class="note good" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><strong>Prize pool</strong><p style="margin:2px 0 0">$10 from each $20 entry. Another $${(n * 10).toLocaleString("en-US")} raised for Movember.</p></div><span class="cond" style="font-size:36px;font-weight:800;line-height:1">$${(n * 10).toLocaleString("en-US")}</span></div>`;
-  $("poolLine").textContent = n ? `With ${n} team${n === 1 ? "" : "s"} entered, the pool is currently $${(n * 10).toLocaleString("en-US")}.` : "";
-  $("leagueHead").innerHTML = pool + (live
+  const total = `$${(n * 10).toLocaleString("en-US")}`;
+  const pool = `<div class="note good" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><strong>Prize pool running total</strong><p style="margin:2px 0 0">$10 from each $20 entry goes into the pool and $10 goes to Movember. ${n} team${n === 1 ? "" : "s"} × $10 = ${total}. The winner takes the whole prize pool.</p></div><span class="cond" style="font-size:36px;font-weight:800;line-height:1">${total}</span></div>`;
+  $("leagueFoot").innerHTML = pool;
+  $("poolLine").textContent = n ? `With ${n} team${n === 1 ? "" : "s"} entered, the pool is currently ${total}.` : "";
+  $("leagueHead").innerHTML = (live
     ? `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"}. Points include captain double. Ties are decided by GW12, then GW11, GW10 and GW9; if still level, the prize is shared.</p>`
     : `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"} entered so far. Squads are revealed when the game starts on 1 November.</p>`);
   if (!n) { $("leagueList").innerHTML = `<div class="empty">No teams yet. Be the first to enter from the My team tab.</div>`; return; }
