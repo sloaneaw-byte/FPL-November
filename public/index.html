@@ -113,13 +113,13 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 .sheet-h h3{margin:0;font-size:26px}
 .sheet-h .filters{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-top:8px}
 .list{overflow-y:auto;padding:4px 0 calc(10px + env(safe-area-inset-bottom,0px))}
-.opt{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 16px;cursor:pointer}
+.opt{display:grid;grid-template-columns:42px 1fr;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 16px;cursor:pointer}
 .opt:hover:not(:disabled){background:var(--bg)}
 .opt:disabled{opacity:.42;cursor:not-allowed}
 .opt .c{font:800 15px/1 "Barlow Condensed",sans-serif;color:var(--muted)}
 .opt .n{font-weight:600}
 .opt .why{display:block;font-size:13px;color:var(--danger);font-weight:600}
-.opt .pts{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.opt.injured .n{text-decoration:line-through}
 .opt.sel{background:var(--bg)}
 
 /* league */
@@ -142,6 +142,29 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
 .cbadge{display:inline-block;background:var(--gold);color:var(--gold-ink);border-radius:4px;padding:0 5px;font:800 12px/18px "Barlow Condensed",sans-serif;margin-left:4px}
 .scroll{overflow-x:auto}
 .empty{text-align:center;padding:36px 16px;color:var(--muted)}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+@media (max-width:520px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat.pool{border-left:5px solid var(--gold)}
+.stat.mo{border-left:5px solid var(--tache)}
+.stat-l{font:800 15px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.stat-v{font:800 38px/1.05 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums;margin-top:6px}
+.stat-v span{font-size:15px;color:var(--muted);margin-left:6px;letter-spacing:.04em}
+.stat-g{font:700 20px/1.1 "Barlow Condensed","Arial Narrow",sans-serif;font-variant-numeric:tabular-nums;color:var(--muted)}
+.lt{width:100%;min-width:440px;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:14px;font-size:15px}
+.lt th,.lt td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.lt thead th{color:var(--muted);font-weight:600;font-size:13px}
+.lt .r{text-align:right;font-variant-numeric:tabular-nums}
+.lt .rk{font:800 22px/1 "Barlow Condensed",sans-serif;color:var(--muted);width:2.2em}
+.lt .tt{font:800 22px/1 "Barlow Condensed",sans-serif}
+.lt tbody.me .team td:first-child{box-shadow:inset 4px 0 0 var(--gold)}
+.lt .detail td{background:var(--bg)}
+.tbtn{background:none;border:0;padding:0;text-align:left;cursor:pointer;display:block}
+.tbtn .tn{font:700 19px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.tbtn .tn::after{content:" ▸";color:var(--muted);font-size:14px}
+.tbtn[aria-expanded="true"] .tn::after{content:" ▾"}
+.tbtn .mn{display:block;color:var(--muted);font-size:13px}
 
 /* rules */
 .rules h2{font-size:30px;margin:26px 0 6px}
@@ -188,7 +211,7 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
     <svg viewBox="0 0 120 44" aria-hidden="true"><path fill="currentColor" d="M60 14c-6-9-18-12-28-6-7 4-10 13-18 14-6 1-11-3-13-8 0 13 10 25 25 25 13 0 22-8 30-15 2-2 3-3 4-3s2 1 4 3c8 7 17 15 30 15 15 0 25-12 25-25-2 5-7 9-13 8-8-1-11-10-18-14-10-6-22-3-28 6z"/></svg>
     <div>
       <h1>Movember Fantasy Football</h1>
-      <p class="sub">2026/27 FPL challenge, gameweeks 9 to 12</p>
+      <p class="sub">2026/27 FPL challenge, gameweeks 9 to 12. Teams lock at 11:30pm AEST on 31 October (1:30pm GMT).</p>
     </div>
   </div>
   <div class="clock" id="clock" aria-live="off"></div>
@@ -219,6 +242,7 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
     </label>
     <ul class="checks" id="checks"></ul>
     <button class="primary" id="save">Lock in my team</button>
+    <button class="ghost" id="resetTeam" type="button" style="display:block;margin:12px auto 0">Reset team</button>
     <p class="err" id="saveErr" role="alert"></p>
   </section>
 
@@ -244,17 +268,18 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
       <li>Pick one captain for all four gameweeks. Your captain scores double every week and can’t be changed, even if injured.</li>
       <li>Positions follow the official FPL position allocation.</li>
       <li>A postponed game that’s replayed within GW9 to GW12 counts as a double gameweek. Only games played in GW9 to GW12 count.</li>
-      <li>Squads stay hidden until the game starts on 1 November. You can change your team until then.</li>
+      <li>Teams lock at 11:30pm AEST on Saturday 31 October (1:30pm GMT). Squads stay hidden until then, and you can change your team up to that point.</li>
+      <li>If you notice a player is missing from the list, they can’t be added. They won’t appear for anyone else either, so it’s the same for everyone.</li>
     </ul>
     <h2>Entry fee</h2>
     <ul>
-      <li>Entry is $20 per team: $10 goes to Movember and $10 goes into the prize pool.</li>
+      <li>Entry is $25 per team (£13.20): $12.50 goes to Movember and $12.50 goes into the prize pool.</li>
     </ul>
     <h2>Prize</h2>
     <ul>
       <li>The team with the highest points total across GW9 to GW12 wins the whole prize pool — winner takes all. <span id="poolLine"></span></li>
       <li>If there’s a tie for first place, the highest scorer in GW12 wins. If it’s still a draw, the highest score in GW11, then GW10, then GW9 decides it, whichever produces a winner first. If it’s still a draw after that, the prize is shared.</li>
-      <li>A league table goes round after the final match of each gameweek.</li>
+      <li>Scores are updated at the end of each round. The game is run from Australia, so there may be some delays before the league table updates.</li>
     </ul>
     <h2>Useful links</h2>
     <ul>
@@ -295,9 +320,14 @@ details.sq summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:1
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-const PLAYERS = [["David Raya","Arsenal","GK",158.4],["Gabriel","Arsenal","DEF",177.8],["Bruno Fernandes","Man Utd","MID",210.7],["Erling Haaland","Man City","ATT",216.6],["Gianluigi Donnarumma","Man City","GK",150.3],["Virgil van Dijk","Liverpool","DEF",157.1],["Morgan Gibbs-White","Nott'm Forest","MID",200.3],["Igor Thiago","Brentford","ATT",162.2],["Jordan Pickford","Everton","GK",140.5],["Adrien Truffert","Bournemouth","DEF",155.9],["Bukayo Saka","Arsenal","MID",180.9],["Joao Pedro","Chelsea","ATT",160.3],["Caoimhin Kelleher","Brentford","GK",140.0],["James Tarkowski","Everton","DEF",154.4],["Dominik Szoboszlai","Liverpool","MID",178.1],["Alexander Isak","Liverpool","ATT",145.6],["Alisson","Liverpool","GK",137.6],["Pedro Porro","Spurs","DEF",151.4],["Matheus Cunha","Man Utd","MID",177.4],["Dominic Calvert-Lewin","Leeds","ATT",141.5],["Robin Roefs","Sunderland","GK",137.5],["Nico O'Reilly","Man City","DEF",148.9],["Cole Palmer","Chelsea","MID",170.8],["Nicolas Jackson","Aston Villa","ATT",138.5],["Zion Suzuki","Aston Villa","GK",135.6],["Malick Thiaw","Newcastle","DEF",147.4],["Bryan Mbeumo","Man Utd","MID",168.2],["Gonzalo Garcia","Fulham","ATT",132.9],["Lukas Hornicek","Newcastle","GK",135.2],["Matheus Nunes","Man City","DEF",146.9],["Antoine Semenyo","Man City","MID",164.2],["Thierno Barry","Everton","ATT",129.1],["Matz Sels","Nott'm Forest","GK",134.1],["Neco Williams","Nott'm Forest","DEF",142.8],["Morgan Rogers","Chelsea","MID",162.9],["Igor Jesus","Nott'm Forest","ATT",128.2],["James Trafford","Leeds","GK",134.0],["Chris Richards","Crystal Palace","DEF",141.4],["Kiernan Dewsbury-Hall","Everton","MID",157.8],["Kai Havertz","Arsenal","ATT",127.7],["Emiliano Martinez","Chelsea","GK",133.4],["Vitaliy Mykolenko","Everton","DEF",141.0],["Rayan Cherki","Man City","MID",154.6],["Yoane Wissa","Newcastle","ATT",122.7],["Dean Henderson","Crystal Palace","GK",129.4],["Tyrick Mitchell","Crystal Palace","DEF",140.5],["Jeremy Doku","Man City","MID",153.4],["Omar Marmoush","Spurs","ATT",115.8],["Bart Verbruggen","Brighton","GK",128.6],["Jarrad Branthwaite","Everton","DEF",140.0],["Florian Wirtz","Liverpool","MID",152.6],["Brian Brobbey","Sunderland","ATT",114.1],["Antonin Kinsky","Spurs","GK",127.0],["Jurrien Timber","Arsenal","DEF",139.2],["Declan Rice","Arsenal","MID",147.1],["Jean-Philippe Mateta","Crystal Palace","ATT",107.6],["Carl Rushworth","Coventry","GK",125.8],["Marc Guehi","Man City","DEF",137.0],["Rayan","Bournemouth","MID",146.5],["Oliver McBurnie","Hull","ATT",103.7],["Senne Lammens","Man Utd","GK",124.7],["Jan Paul van Hecke","Spurs","DEF",135.4],["Marcus Tavernier","Bournemouth","MID",145.8],["Evanilson","Bournemouth","ATT",101.1],["Bernd Leno","Fulham","GK",123.2],["Nathan Collins","Brentford","DEF",134.6],["Enzo Le Fee","Sunderland","MID",143.6],["Viktor Gyokeres","Arsenal","ATT",99.3],["Kjell Scherpen","Ipswich","GK",106.8],["Milos Kerkez","Liverpool","DEF",134.5],["John McGinn","Aston Villa","MID",141.1],["Will Osula","Newcastle","ATT",97.2],["Djordje Petrovic","Bournemouth","GK",98.6],["Murillo","Nott'm Forest","DEF",134.5],["Bradley Barcola","Liverpool","MID",140.1],["Taiwo Awoniyi","Coventry","ATT",95.1],["Konstantinos Tzolakis","Hull","GK",97.0],["Josko Gvardiol","Man City","DEF",133.6],["Diego Gomez","Brighton","MID",136.7],["Benjamin Sesko","Man Utd","ATT",90.6],["Michele Di Gregorio","Bournemouth","GK",35.2],["Nikola Milenkovic","Nott'm Forest","DEF",131.4],["Phil Foden","Man City","MID",133.0],["Matias Fernandez-Pardo","Newcastle","ATT",90.3],["Riccardo Calafiori","Arsenal","DEF",131.2],["Harvey Barnes","Newcastle","MID",131.3],["Georginio Rutter","Brighton","ATT",88.5],["Anan Khalaili","Crystal Palace","DEF",129.8],["Ryan Gravenberch","Liverpool","MID",131.2],["Emersonn","Ipswich","ATT",87.0],["Michael Kayode","Brentford","DEF",127.7],["Elliot Anderson","Man City","MID",130.7],["Dominic Solanke","Spurs","ATT",84.7],["Marcos Senesi","Spurs","DEF",124.3],["Jack Grealish","Everton","MID",130.0],["Liam Delap","Nott'm Forest","ATT",82.7],["Nordi Mukiele","Sunderland","DEF",122.5],["Dango Ouattara","Brentford","MID",128.8],["Chris Wood","Nott'm Forest","ATT",75.4],["Ferdi Kadioglu","Brighton","DEF",121.1],["Alexis Mac Allister","Liverpool","MID",127.9],["Jorgen Strand Larsen","Crystal Palace","ATT",74.5],["Maxim De Cuyper","Brighton","DEF",120.0],["James Garner","Everton","MID",127.0],["Brandon Thomas-Asante","Coventry","ATT",70.4],["James Hill","Bournemouth","DEF",119.2],["Bruno Guimaraes","Arsenal","MID",126.6],["Danny Welbeck","Chelsea","ATT",68.9],["Daniel Ballard","Sunderland","DEF",118.2],["Alex Iwobi","Fulham","MID",126.6],["Promise David","Brighton","ATT",66.4],["Diogo Dalot","Man Utd","DEF",116.6],["Enzo Fernandez","Man City","MID",124.8],["Zian Flemming","Ipswich","ATT",64.8],["Ainsley Maitland-Niles","Everton","DEF",115.0],["Alex Scott","Bournemouth","MID",124.4],["Rodrigo Muniz","Fulham","ATT",59.9],["Lewis Hall","Newcastle","DEF",114.0],["Ethan Ampadu","Leeds","MID",124.1],["Brian Madjo","Aston Villa","ATT",58.4],["Jaydee Canvot","Crystal Palace","DEF",113.4],["Kevin Schade","Brentford","MID",123.9],["Alvaro Rodriguez","Bournemouth","ATT",51.7],["Olivier Boscagli","Brighton","DEF",113.1],["Lewis Miley","Newcastle","MID",123.4],["Charalampos Kostoulas","Brighton","ATT",49.5],["Luka Vuskovic","Brighton","DEF",110.1],["Anton Stach","Leeds","MID",123.2],["Wilson Isidor","Sunderland","ATT",49.1],["Taylor Harwood-Bellis","Aston Villa","DEF",109.7],["Granit Xhaka","Sunderland","MID",122.8],["Sidiki Cherif","Coventry","ATT",44.6],["Matty Cash","Aston Villa","DEF",109.7],["Cody Gakpo","Liverpool","MID",122.1],["Lukas Nmecha","Leeds","ATT",44.5],["Antonee Robinson","Fulham","DEF",107.3],["Marcus Rashford","Man Utd","MID",122.0],["Eddie Nketiah","Crystal Palace","ATT",41.7],["Milan van Ewijk","Coventry","DEF",107.2],["Pascal Gross","Brighton","MID",121.2],["Haji Wright","Coventry","ATT",40.2],["Joe Rodon","Leeds","DEF",107.0],["Emiliano Buendia","Aston Villa","MID",121.2],["Callum Wilson","Brentford","ATT",38.5],["Bobby Thomas","Coventry","DEF",106.8],["Jack Hinshelwood","Brighton","MID",120.4],["Hugo Ekitike","Liverpool","ATT",33.4],["Calvin Bassey","Fulham","DEF",105.5],["Mamadou Sangare","Brentford","MID",118.7],["Stefanos Tzimas","Brighton","ATT",27.4],["Lisandro Martinez","Man Utd","DEF",105.5],["Martin Odegaard","Arsenal","MID",117.9],["Richarlison","Spurs","ATT",26.2],["Antonio Silva","Bournemouth","DEF",104.7],["Junior Kroupi","Bournemouth","MID",117.7],["Sindre Egeli","Ipswich","ATT",25.0],["Reece James","Chelsea","DEF",103.8],["Moises Caicedo","Chelsea","MID",117.5],["Emmanuel Emegha","Chelsea","ATT",23.7],["Jayden Bogle","Leeds","DEF",103.5],["Mohamed Belloumi","Hull","MID",116.3],["Daniel Munoz","Nott'm Forest","DEF",103.4],["Ismaila Sarr","Crystal Palace","MID",115.9],["Maxence Lacroix","Chelsea","DEF",102.7],["Josh King","Fulham","MID",115.4],["Tarik Muharemovic","Leeds","DEF",101.5],["Harry Wilson","Leeds","MID",114.9],["Kristoffer Ajer","Brentford","DEF",101.2],["Julio Enciso","Ipswich","MID",113.6],["Ian Maatsen","Aston Villa","DEF",100.8],["Christos Tzolis","Arsenal","MID",112.8],["Ezri Konsa","Arsenal","DEF",100.1],["Adam Wharton","Crystal Palace","MID",112.7],["Aurele Amenda","Coventry","DEF",99.7],["Yeremy Pino","Crystal Palace","MID",112.5],["Trai Hume","Sunderland","DEF",98.9],["Yasin Ayari","Brighton","MID",110.1],["Leif Davis","Ipswich","DEF",98.1],["Matt Grimes","Coventry","MID",109.0],["Pau Torres","Aston Villa","DEF",98.0],["Tyrique George","Everton","MID",108.5],["Micky van de Ven","Spurs","DEF",97.1],["Ibrahim Sangare","Nott'm Forest","MID",107.7],["Sven Botman","Newcastle","DEF",95.7],["Sandro Tonali","Spurs","MID",107.0],["Dara O'Shea","Ipswich","DEF",95.2],["Boubacar Kamara","Aston Villa","MID",106.9],["Jeremy Jacquet","Liverpool","DEF",94.8],["Vitaly Janelt","Brentford","MID",105.1],["Jeremie Frimpong","Liverpool","DEF",93.9],["Iliman Ndiaye","Man City","MID",104.6],["Ousmane Diomande","Nott'm Forest","DEF",93.8],["Youri Tielemans","Man Utd","MID",103.8],["Jay Dasilva","Coventry","DEF",93.8],["Gustavo Hamer","Coventry","MID",101.6],["Mats Wieffer","Brighton","DEF",91.3],["Johan Manzambi","Aston Villa","MID",100.2],["Gabriel Gudmundsson","Leeds","DEF",90.5],["Justin Kluivert","Bournemouth","MID",100.2],["Luke Shaw","Man Utd","DEF",90.5],["Daichi Kamada","Crystal Palace","MID",100.1],["Abdukodir Khusanov","Man City","DEF",89.2],["Mathias Jensen","Brentford","MID",99.4],["William Saliba","Arsenal","DEF",86.9],["Savio","Spurs","MID",99.1],["Sepp van den Berg","Brentford","DEF",85.6],["Eberechi Eze","Arsenal","MID",98.1],["Jacob Greaves","Ipswich","DEF",85.5],["Dan Ndoye","Nott'm Forest","MID",97.5],["Timothy Castagne","Fulham","DEF",84.6],["James McAtee","Nott'm Forest","MID",97.0],["Levi Colwill","Chelsea","DEF",84.5],["Jack Rudoni","Coventry","MID",96.2],["Marco Palestra","Chelsea","DEF",83.4],["Noah Sadiki","Sunderland","MID",95.3],["Juanlu","Bournemouth","DEF",82.9],["Mikkel Damsgaard","Brentford","MID",93.9],["Valentino Livramento","Newcastle","DEF",80.9],["Abdul Fatawu","Ipswich","MID",92.0],["Destiny Udogie","Spurs","DEF",80.4],["Mateus Fernandes","Spurs","MID",91.9],["Ruben Dias","Man City","DEF",79.9],["Nilson Angulo","Sunderland","MID",91.7],["Dan Burn","Newcastle","DEF",79.4],["Amad Diallo","Man Utd","MID",91.6],["John Egan","Hull","DEF",79.2],["Victor Munoz","Liverpool","MID",91.4],["Jaka Bijol","Leeds","DEF",78.9],["Mohammed Kudus","Spurs","MID",90.9],["Omar Alderete","Sunderland","DEF",78.2],["Cesar Palacios","Fulham","MID",90.9],["Wesley Fofana","Chelsea","DEF",78.0],["Emile Smith Rowe","Fulham","MID",89.8],["Ola Aina","Nott'm Forest","DEF",78.0],["Kobbie Mainoo","Man Utd","MID",89.4],["James Justin","Leeds","DEF",77.5],["James Maddison","Spurs","MID",88.2],["Ben White","Arsenal","DEF",76.7],["Sander Berge","Fulham","MID",86.1],["Piero Hincapie","Arsenal","DEF",75.7],["Caleb Yirenkyi","Coventry","MID",85.4],["El Hadji Malick Diouf","Brentford","DEF",74.8],["Hayden Hackney","Everton","MID",85.0],["Joachim Andersen","Fulham","DEF",73.5],["Daizen Maeda","Ipswich","MID",84.4],["Jorrel Hato","Chelsea","DEF",73.4],["Kaoru Mitoma","Brighton","MID",84.4],["Ryan Giles","Hull","DEF",72.6],["Loum Tchaouna","Coventry","MID",84.4],["Conor Bradley","Liverpool","DEF",71.9],["Marcelino Nunez","Ipswich","MID",84.0],["Harry Maguire","Man Utd","DEF",71.6],["Noah Okafor","Leeds","MID",83.6],["Takehiro Tomiyasu","Crystal Palace","DEF",70.5],["Xaver Schlager","Nott'm Forest","MID",83.5],["Charlie Hughes","Hull","DEF",69.8],["Yankuba Minteh","Brighton","MID",82.9],["Lewis Dunk","Brighton","DEF",69.6],["Jaidon Anthony","Brentford","MID",80.0],["Jake O'Brien","Everton","DEF",69.2],["Anthony Elanga","Newcastle","MID",79.6],["Issa Diop","Ipswich","DEF",69.0],["Habib Diarra","Sunderland","MID",79.0],["David Affengruber","Fulham","DEF",68.5],["Malick Fofana","Sunderland","MID",78.8],["Ryan Sessegnon","Fulham","DEF",67.3],["Estevao","Chelsea","MID",78.5],["Axel Disasi","Crystal Palace","DEF",66.3],["Merlin Rohl","Everton","MID",78.1],["Jair Cunha","Nott'm Forest","DEF",65.6],["Nico Gonzalez","Newcastle","MID",78.0],["Matteo Ruggeri","Aston Villa","DEF",64.8],["Tyler Adams","Bournemouth","MID",76.8],["Amar Dedic","Newcastle","DEF",64.5],["Brennan Johnson","Everton","MID",76.5],["Ethan Pinnock","Coventry","DEF",63.8],["Brenden Aaronson","Leeds","MID",76.4],["Nobel Mendy","Hull","DEF",62.8],["Mathys Tel","Spurs","MID",76.3],["Andrew Robertson","Spurs","DEF",61.4],["Pedro Neto","Chelsea","MID",75.5],["Kenny Tete","Fulham","DEF",60.8],["Joao Gomes","Aston Villa","MID",73.2],["Malo Gusto","Chelsea","DEF",60.5],["Matt Crooks","Hull","MID",73.2],["Elliot Stroud","Hull","DEF",60.4],["Ibrahim Mbaye","Aston Villa","MID",73.0],["Ronald Araujo","Liverpool","DEF",59.9],["Joe Gelhardt","Hull","MID",72.4],["Reinildo","Sunderland","DEF",59.3],["Oscar Bobb","Fulham","MID",72.0],["Oscar Mingueza","Crystal Palace","DEF",58.4],["Ephron Mason-Clark","Coventry","MID",71.6],["Ayden Heaven","Man Utd","DEF",57.6],["Ryan Christie","Bournemouth","MID",71.2],["Thomas Meunier","Sunderland","DEF",57.0],["Mikel Merino","Arsenal","MID",69.0],["Cristhian Mosquera","Arsenal","DEF",55.1],["Kevin","Fulham","MID",67.8],["Jaouen Hadjam","Brighton","DEF",53.1],["Sasa Lukic","Ipswich","MID",67.3],["Pep Chavarria","Chelsea","DEF",52.8],["Regan Slater","Hull","MID",66.3],["Semi Ajayi","Hull","DEF",52.0],["Mohamed-Ali Cho","Hull","MID",66.2],["Dayann Methalie","Sunderland","DEF",51.5],["Leon Goretzka","Aston Villa","MID",66.0],["Bafode Diakite","Bournemouth","DEF",51.1],["Frank Onyeka","Coventry","MID",65.1],["Josh Acheampong","Chelsea","DEF",50.9],["Harrison Armstrong","Everton","MID",63.2],["Pascal Struijk","Brighton","DEF",50.1],["Patrick Dorgu","Man Utd","MID",61.7],["Nico Elvedi","Leeds","DEF",49.6],["Shea Charles","Fulham","MID",60.9],["Aaron Wan-Bissaka","Aston Villa","DEF",46.5],["Ayyoub Bouaddi","Man City","MID",60.6],["Leny Yoro","Man Utd","DEF",46.5],["Tyler Dibling","Everton","MID",60.3],["Lewie Coyle","Hull","DEF",45.7],["Keane Lewis-Potter","Brentford","MID",60.0],["Honest Ahanor","Crystal Palace","DEF",42.7],["Rodrigo Bentancur","Spurs","MID",59.8],["Adam Smith","Bournemouth","DEF",42.2],["Alejandro Garnacho","Aston Villa","MID",59.4],["Melvin Bard","Leeds","DEF",39.0],["Romeo Lavia","Chelsea","MID",59.4],["Abdoul Ouattara","Ipswich","DEF",38.6],["Carlos Baleba","Man Utd","MID",59.4],["Noussair Mazraoui","Man Utd","DEF",38.0],["Noni Madueke","Arsenal","MID",58.7],["Fabian Schar","Newcastle","DEF",36.5],["Tatsuhiro Sakamoto","Coventry","MID",56.2],["Victor Lindelof","Aston Villa","DEF",35.5],["Jens Hjerto-Dahl","Hull","MID",56.1],["Veljko Milosavljevic","Bournemouth","DEF",34.6],["Joelinton","Newcastle","MID",56.0],["Kevin Danso","Sunderland","DEF",34.4],["Valentin Barco","Chelsea","MID",55.8],["Kostas Tsimikas","Liverpool","DEF",31.9],["Dwight McNeil","Crystal Palace","MID",54.7],["Tyrone Mings","Aston Villa","DEF",29.0],["Rio Ngumoha","Liverpool","MID",53.8],["Giovanni Leoni","Liverpool","DEF",28.4],["Florentino Luis","Ipswich","MID",53.5],["Darnell Furlong","Ipswich","DEF",27.1],["Bazoumana Toure","Newcastle","MID",53.3],["Matthijs De Ligt","Man Utd","DEF",26.7],["Azor Matusiwa","Ipswich","MID",52.7],["Matt Targett","Hull","DEF",26.5],["Sean Steur","Newcastle","MID",52.7],["Aaron Hickey","Brentford","DEF",26.1],["Lucas Gourna-Douath","Hull","MID",52.3],["Brooke Norton-Cuffy","Hull","DEF",25.7],["Exequiel Palacios","Ipswich","MID",52.3],["Lucas Herrington","Hull","DEF",25.1],["Tim Iroegbunam","Hull","MID",50.7],["Jorge Cuenca","Fulham","DEF",24.1],["Callum Hudson-Odoi","Nott'm Forest","MID",48.7],["Michael Keane","Everton","DEF",23.8],["Yehor Yarmolyuk","Brentford","MID",47.4],["Rayan Ait-Nouri","Man City","DEF",22.5],["Myles Lewis-Skelly","Arsenal","MID",47.4],["Rico Lewis","Man City","DEF",21.3],["Ross Barkley","Aston Villa","MID",47.0],["Cedric Kipre","Ipswich","DEF",21.1],["Amine Adli","Bournemouth","MID",46.6],["Ben Chilwell","Crystal Palace","DEF",20.0],["Dejan Kulusevski","Spurs","MID",46.5],["Joe Gomez","Liverpool","DEF",19.6],["Christian Norgaard","Everton","MID",46.4],["Luca Netz","Nott'm Forest","DEF",17.4],["Evann Guessand","Crystal Palace","MID",45.3],["Tosin Adarabioyo","Spurs","DEF",17.1],["Chemsdine Talbi","Sunderland","MID",44.5],["Luke Woolfenden","Coventry","DEF",16.0],["Hugo Larsson","Fulham","MID",44.0],["Jake Bidwell","Coventry","DEF",15.4],["Ao Tanaka","Leeds","MID",43.7],["Joel Latibeaudiere","Coventry","DEF",14.8],["Lewis Cook","Bournemouth","MID",43.4],["Jack Clarke","Ipswich","MID",43.2],["Archie Gray","Spurs","MID",40.5],["Jean-Matteo Bahoya","Leeds","MID",40.3],["Dario Osorio","Crystal Palace","MID",38.6],["Mateo Kovacic","Man City","MID",38.6],["Quinten Timber","Crystal Palace","MID",38.6],["Jacob Ramsey","Newcastle","MID",37.5],["Joe Willock","Newcastle","MID",36.9],["Chema","Brighton","MID",36.9],["Hidemasa Morita","Hull","MID",36.7],["Nicolas Dominguez","Nott'm Forest","MID",36.0],["Alysson","Aston Villa","MID",35.9],["Chris Rigg","Sunderland","MID",35.4],["Kasey McAteer","Ipswich","MID",35.2],["David Brooks","Bournemouth","MID",35.2],["Lamare Bogarde","Aston Villa","MID",35.1],["Jaden Philogene","Ipswich","MID",34.8],["Jacob Murphy","Newcastle","MID",34.3],["Manuel Angel","Fulham","MID",34.3],["Andrey Santos","Man Utd","MID",33.7],["Sorba Thomas","Hull","MID",33.2],["Victor Torp","Coventry","MID",31.5],["Christos Mouzakitis","Hull","MID",30.4],["Ryan Yates","Nott'm Forest","MID",30.3],["Mason Mount","Man Utd","MID",29.7],["George Hemmings","Aston Villa","MID",28.6],["Aladji Bamba","Newcastle","MID",28.4],["Martin Zubimendi","Arsenal","MID",28.0],["Conor Gallagher","Spurs","MID",26.6],["Gabriel Martinelli","Arsenal","MID",25.2],["Sean Longstaff","Leeds","MID",24.3],["Ben Gannon Doak","Bournemouth","MID",22.9],["Femi Azeez","Brighton","MID",22.6],["Carlos Alcaraz","Everton","MID",22.1],["Mykhailo Mudryk","Spurs","MID",21.7],["Geovany Quenda","Chelsea","MID",21.4],["Ibrahim Osman","Brighton","MID",21.1],["Jamie Gittens","Chelsea","MID",20.7],["Xavi Simons","Spurs","MID",20.0],["Lucas Bergvall","Spurs","MID",19.9],["Josh Eccles","Coventry","MID",19.7],["Antoni Milambo","Brentford","MID",19.6],["Ilia Gruev","Leeds","MID",19.4],["Jocelin Ta Bi","Sunderland","MID",18.5],["Wataru Endo","Liverpool","MID",17.9],["Alex Toth","Bournemouth","MID",16.8],["Jefferson Lerma","Crystal Palace","MID",16.4],["Daniel James","Leeds","MID",15.9],["Will Hughes","Crystal Palace","MID",15.2]];   // [name, club, pos, projPts]
+const PLAYERS = [["David Raya","Arsenal","GK",158.4],["Gabriel","Arsenal","DEF",177.8],["Bruno Fernandes","Man Utd","MID",210.7],["Erling Haaland","Man City","ATT",216.6],["Gianluigi Donnarumma","Man City","GK",150.3],["Virgil van Dijk","Liverpool","DEF",157.1],["Morgan Gibbs-White","Nott'm Forest","MID",200.3],["Igor Thiago","Brentford","ATT",162.2],["Jordan Pickford","Everton","GK",140.5],["Adrien Truffert","Bournemouth","DEF",155.9],["Bukayo Saka","Arsenal","MID",180.9],["Joao Pedro","Chelsea","ATT",160.3],["Caoimhin Kelleher","Brentford","GK",140.0],["James Tarkowski","Everton","DEF",154.4],["Dominik Szoboszlai","Liverpool","MID",178.1],["Alexander Isak","Liverpool","ATT",145.6],["Alisson","Liverpool","GK",137.6],["Pedro Porro","Spurs","DEF",151.4],["Matheus Cunha","Man Utd","MID",177.4],["Dominic Calvert-Lewin","Leeds","ATT",141.5],["Robin Roefs","Sunderland","GK",137.5],["Nico O'Reilly","Man City","DEF",148.9],["Cole Palmer","Chelsea","MID",170.8],["Nicolas Jackson","Aston Villa","ATT",138.5],["Zion Suzuki","Aston Villa","GK",135.6],["Malick Thiaw","Newcastle","DEF",147.4],["Bryan Mbeumo","Man Utd","MID",168.2],["Gonzalo Garcia","Fulham","ATT",132.9],["Lukas Hornicek","Newcastle","GK",135.2],["Matheus Nunes","Man City","DEF",146.9],["Antoine Semenyo","Man City","MID",164.2],["Thierno Barry","Everton","ATT",129.1],["Matz Sels","Nott'm Forest","GK",134.1],["Neco Williams","Nott'm Forest","DEF",142.8],["Morgan Rogers","Chelsea","MID",162.9],["Igor Jesus","Nott'm Forest","ATT",128.2],["James Trafford","Leeds","GK",134.0],["Chris Richards","Crystal Palace","DEF",141.4],["Kiernan Dewsbury-Hall","Everton","MID",157.8],["Kai Havertz","Arsenal","ATT",127.7],["Emiliano Martinez","Chelsea","GK",133.4],["Vitaliy Mykolenko","Everton","DEF",141.0],["Rayan Cherki","Man City","MID",154.6],["Yoane Wissa","Newcastle","ATT",122.7],["Dean Henderson","Crystal Palace","GK",129.4],["Tyrick Mitchell","Crystal Palace","DEF",140.5],["Jeremy Doku","Man City","MID",153.4],["Omar Marmoush","Spurs","ATT",115.8],["Bart Verbruggen","Brighton","GK",128.6],["Jarrad Branthwaite","Everton","DEF",140.0],["Florian Wirtz","Liverpool","MID",152.6],["Brian Brobbey","Sunderland","ATT",114.1],["Antonin Kinsky","Spurs","GK",127.0],["Jurrien Timber","Arsenal","DEF",139.2],["Declan Rice","Arsenal","MID",147.1],["Jean-Philippe Mateta","Crystal Palace","ATT",107.6],["Carl Rushworth","Coventry","GK",125.8],["Marc Guehi","Man City","DEF",137.0],["Rayan","Bournemouth","MID",146.5],["Oliver McBurnie","Hull","ATT",103.7],["Senne Lammens","Man Utd","GK",124.7],["Jan Paul van Hecke","Spurs","DEF",135.4],["Marcus Tavernier","Bournemouth","MID",145.8],["Evanilson","Bournemouth","ATT",101.1],["Bernd Leno","Fulham","GK",123.2],["Nathan Collins","Brentford","DEF",134.6],["Enzo Le Fee","Sunderland","MID",143.6],["Viktor Gyokeres","Arsenal","ATT",99.3],["Kjell Scherpen","Ipswich","GK",106.8],["Milos Kerkez","Liverpool","DEF",134.5],["John McGinn","Aston Villa","MID",141.1],["Will Osula","Newcastle","ATT",97.2],["Djordje Petrovic","Bournemouth","GK",98.6],["Murillo","Nott'm Forest","DEF",134.5],["Bradley Barcola","Liverpool","MID",140.1],["Taiwo Awoniyi","Coventry","ATT",95.1],["Konstantinos Tzolakis","Hull","GK",97.0],["Josko Gvardiol","Man City","DEF",133.6],["Diego Gomez","Brighton","MID",136.7],["Benjamin Sesko","Man Utd","ATT",90.6],["Michele Di Gregorio","Bournemouth","GK",35.2],["Nikola Milenkovic","Nott'm Forest","DEF",131.4],["Phil Foden","Man City","MID",133.0],["Matias Fernandez-Pardo","Newcastle","ATT",90.3],["Riccardo Calafiori","Arsenal","DEF",131.2],["Harvey Barnes","Newcastle","MID",131.3],["Georginio Rutter","Brighton","ATT",88.5],["Anan Khalaili","Crystal Palace","DEF",129.8],["Ryan Gravenberch","Liverpool","MID",131.2],["Emersonn","Ipswich","ATT",87.0],["Michael Kayode","Brentford","DEF",127.7],["Elliot Anderson","Man City","MID",130.7],["Dominic Solanke","Spurs","ATT",84.7],["Marcos Senesi","Spurs","DEF",124.3],["Jack Grealish","Everton","MID",130.0],["Liam Delap","Nott'm Forest","ATT",82.7],["Nordi Mukiele","Sunderland","DEF",122.5],["Dango Ouattara","Brentford","MID",128.8],["Chris Wood","Nott'm Forest","ATT",75.4],["Ferdi Kadioglu","Brighton","DEF",121.1],["Alexis Mac Allister","Liverpool","MID",127.9],["Jorgen Strand Larsen","Crystal Palace","ATT",74.5],["Maxim De Cuyper","Brighton","DEF",120.0],["James Garner","Everton","MID",127.0],["Brandon Thomas-Asante","Coventry","ATT",70.4],["James Hill","Bournemouth","DEF",119.2],["Bruno Guimaraes","Arsenal","MID",126.6],["Danny Welbeck","Chelsea","ATT",68.9],["Daniel Ballard","Sunderland","DEF",118.2],["Alex Iwobi","Fulham","MID",126.6],["Promise David","Brighton","ATT",66.4],["Diogo Dalot","Man Utd","DEF",116.6],["Enzo Fernandez","Man City","MID",124.8],["Zian Flemming","Ipswich","ATT",64.8],["Ainsley Maitland-Niles","Everton","DEF",115.0],["Alex Scott","Bournemouth","MID",124.4],["Rodrigo Muniz","Fulham","ATT",59.9],["Lewis Hall","Newcastle","DEF",114.0],["Ethan Ampadu","Leeds","MID",124.1],["Brian Madjo","Aston Villa","ATT",58.4],["Jaydee Canvot","Crystal Palace","DEF",113.4],["Kevin Schade","Brentford","MID",123.9],["Alvaro Rodriguez","Bournemouth","ATT",51.7],["Olivier Boscagli","Brighton","DEF",113.1],["Lewis Miley","Newcastle","MID",123.4],["Charalampos Kostoulas","Brighton","ATT",49.5],["Luka Vuskovic","Brighton","DEF",110.1],["Anton Stach","Leeds","MID",123.2],["Wilson Isidor","Sunderland","ATT",49.1],["Taylor Harwood-Bellis","Aston Villa","DEF",109.7],["Granit Xhaka","Sunderland","MID",122.8],["Sidiki Cherif","Coventry","ATT",44.6],["Matty Cash","Aston Villa","DEF",109.7],["Cody Gakpo","Liverpool","MID",122.1],["Lukas Nmecha","Leeds","ATT",44.5],["Antonee Robinson","Fulham","DEF",107.3],["Marcus Rashford","Man Utd","MID",122.0],["Eddie Nketiah","Crystal Palace","ATT",41.7],["Milan van Ewijk","Coventry","DEF",107.2],["Pascal Gross","Brighton","MID",121.2],["Haji Wright","Coventry","ATT",40.2],["Joe Rodon","Leeds","DEF",107.0],["Emiliano Buendia","Aston Villa","MID",121.2],["Callum Wilson","Brentford","ATT",38.5],["Bobby Thomas","Coventry","DEF",106.8],["Jack Hinshelwood","Brighton","MID",120.4],["Hugo Ekitike","Liverpool","ATT",33.4],["Calvin Bassey","Fulham","DEF",105.5],["Mamadou Sangare","Brentford","MID",118.7],["Stefanos Tzimas","Brighton","ATT",27.4],["Lisandro Martinez","Man Utd","DEF",105.5],["Martin Odegaard","Arsenal","MID",117.9],["Richarlison","Spurs","ATT",26.2],["Antonio Silva","Bournemouth","DEF",104.7],["Junior Kroupi","Bournemouth","MID",117.7],["Sindre Egeli","Ipswich","ATT",25.0],["Reece James","Chelsea","DEF",103.8],["Moises Caicedo","Chelsea","MID",117.5],["Emmanuel Emegha","Chelsea","ATT",23.7],["Jayden Bogle","Leeds","DEF",103.5],["Mohamed Belloumi","Hull","MID",116.3],["Daniel Munoz","Nott'm Forest","DEF",103.4],["Ismaila Sarr","Crystal Palace","MID",115.9],["Maxence Lacroix","Chelsea","DEF",102.7],["Josh King","Fulham","MID",115.4],["Tarik Muharemovic","Leeds","DEF",101.5],["Harry Wilson","Leeds","MID",114.9],["Kristoffer Ajer","Brentford","DEF",101.2],["Julio Enciso","Ipswich","MID",113.6],["Ian Maatsen","Aston Villa","DEF",100.8],["Christos Tzolis","Arsenal","MID",112.8],["Ezri Konsa","Arsenal","DEF",100.1],["Adam Wharton","Crystal Palace","MID",112.7],["Aurele Amenda","Coventry","DEF",99.7],["Yeremy Pino","Crystal Palace","MID",112.5],["Trai Hume","Sunderland","DEF",98.9],["Yasin Ayari","Brighton","MID",110.1],["Leif Davis","Ipswich","DEF",98.1],["Matt Grimes","Coventry","MID",109.0],["Pau Torres","Aston Villa","DEF",98.0],["Tyrique George","Everton","MID",108.5],["Micky van de Ven","Spurs","DEF",97.1],["Ibrahim Sangare","Nott'm Forest","MID",107.7],["Sven Botman","Newcastle","DEF",95.7],["Sandro Tonali","Spurs","MID",107.0],["Dara O'Shea","Ipswich","DEF",95.2],["Boubacar Kamara","Aston Villa","MID",106.9],["Jeremy Jacquet","Liverpool","DEF",94.8],["Vitaly Janelt","Brentford","MID",105.1],["Jeremie Frimpong","Liverpool","DEF",93.9],["Iliman Ndiaye","Man City","MID",104.6],["Ousmane Diomande","Nott'm Forest","DEF",93.8],["Youri Tielemans","Man Utd","MID",103.8],["Jay Dasilva","Coventry","DEF",93.8],["Gustavo Hamer","Coventry","MID",101.6],["Mats Wieffer","Brighton","DEF",91.3],["Johan Manzambi","Aston Villa","MID",100.2],["Gabriel Gudmundsson","Leeds","DEF",90.5],["Justin Kluivert","Bournemouth","MID",100.2],["Luke Shaw","Man Utd","DEF",90.5],["Daichi Kamada","Crystal Palace","MID",100.1],["Abdukodir Khusanov","Man City","DEF",89.2],["Mathias Jensen","Brentford","MID",99.4],["William Saliba","Arsenal","DEF",86.9],["Savio","Spurs","MID",99.1],["Sepp van den Berg","Brentford","DEF",85.6],["Eberechi Eze","Arsenal","MID",98.1],["Jacob Greaves","Ipswich","DEF",85.5],["Dan Ndoye","Nott'm Forest","MID",97.5],["Timothy Castagne","Fulham","DEF",84.6],["James McAtee","Nott'm Forest","MID",97.0],["Levi Colwill","Chelsea","DEF",84.5],["Jack Rudoni","Coventry","MID",96.2],["Marco Palestra","Chelsea","DEF",83.4],["Noah Sadiki","Sunderland","MID",95.3],["Juanlu","Bournemouth","DEF",82.9],["Mikkel Damsgaard","Brentford","MID",93.9],["Valentino Livramento","Newcastle","DEF",80.9],["Abdul Fatawu","Ipswich","MID",92.0],["Destiny Udogie","Spurs","DEF",80.4],["Mateus Fernandes","Spurs","MID",91.9],["Ruben Dias","Man City","DEF",79.9],["Nilson Angulo","Sunderland","MID",91.7],["Dan Burn","Newcastle","DEF",79.4],["Amad Diallo","Man Utd","MID",91.6],["John Egan","Hull","DEF",79.2],["Victor Munoz","Liverpool","MID",91.4],["Jaka Bijol","Leeds","DEF",78.9],["Mohammed Kudus","Spurs","MID",90.9],["Omar Alderete","Sunderland","DEF",78.2],["Cesar Palacios","Fulham","MID",90.9],["Wesley Fofana","Chelsea","DEF",78.0],["Emile Smith Rowe","Fulham","MID",89.8],["Ola Aina","Nott'm Forest","DEF",78.0],["Kobbie Mainoo","Man Utd","MID",89.4],["James Justin","Leeds","DEF",77.5],["James Maddison","Spurs","MID",88.2],["Ben White","Arsenal","DEF",76.7],["Sander Berge","Fulham","MID",86.1],["Piero Hincapie","Arsenal","DEF",75.7],["Caleb Yirenkyi","Coventry","MID",85.4],["El Hadji Malick Diouf","Brentford","DEF",74.8],["Hayden Hackney","Everton","MID",85.0],["Joachim Andersen","Fulham","DEF",73.5],["Daizen Maeda","Ipswich","MID",84.4],["Jorrel Hato","Chelsea","DEF",73.4],["Kaoru Mitoma","Brighton","MID",84.4],["Ryan Giles","Hull","DEF",72.6],["Loum Tchaouna","Coventry","MID",84.4],["Conor Bradley","Liverpool","DEF",71.9],["Marcelino Nunez","Ipswich","MID",84.0],["Harry Maguire","Man Utd","DEF",71.6],["Noah Okafor","Leeds","MID",83.6],["Takehiro Tomiyasu","Crystal Palace","DEF",70.5],["Xaver Schlager","Nott'm Forest","MID",83.5],["Charlie Hughes","Hull","DEF",69.8],["Yankuba Minteh","Brighton","MID",82.9],["Lewis Dunk","Brighton","DEF",69.6],["Jaidon Anthony","Brentford","MID",80.0],["Jake O'Brien","Everton","DEF",69.2],["Anthony Elanga","Newcastle","MID",79.6],["Issa Diop","Ipswich","DEF",69.0],["Habib Diarra","Sunderland","MID",79.0],["David Affengruber","Fulham","DEF",68.5],["Malick Fofana","Sunderland","MID",78.8],["Ryan Sessegnon","Fulham","DEF",67.3],["Estevao","Chelsea","MID",78.5],["Axel Disasi","Crystal Palace","DEF",66.3],["Merlin Rohl","Everton","MID",78.1],["Jair Cunha","Nott'm Forest","DEF",65.6],["Nico Gonzalez","Newcastle","MID",78.0],["Matteo Ruggeri","Aston Villa","DEF",64.8],["Tyler Adams","Bournemouth","MID",76.8],["Amar Dedic","Newcastle","DEF",64.5],["Brennan Johnson","Everton","MID",76.5],["Ethan Pinnock","Coventry","DEF",63.8],["Brenden Aaronson","Leeds","MID",76.4],["Nobel Mendy","Hull","DEF",62.8],["Mathys Tel","Spurs","MID",76.3],["Andrew Robertson","Spurs","DEF",61.4],["Pedro Neto","Chelsea","MID",75.5],["Kenny Tete","Fulham","DEF",60.8],["Joao Gomes","Aston Villa","MID",73.2],["Malo Gusto","Chelsea","DEF",60.5],["Matt Crooks","Hull","MID",73.2],["Elliot Stroud","Hull","DEF",60.4],["Ibrahim Mbaye","Aston Villa","MID",73.0],["Ronald Araujo","Liverpool","DEF",59.9],["Joe Gelhardt","Hull","MID",72.4],["Reinildo","Sunderland","DEF",59.3],["Oscar Bobb","Fulham","MID",72.0],["Oscar Mingueza","Crystal Palace","DEF",58.4],["Ephron Mason-Clark","Coventry","MID",71.6],["Ayden Heaven","Man Utd","DEF",57.6],["Ryan Christie","Bournemouth","MID",71.2],["Thomas Meunier","Sunderland","DEF",57.0],["Mikel Merino","Arsenal","MID",69.0],["Cristhian Mosquera","Arsenal","DEF",55.1],["Kevin","Fulham","MID",67.8],["Jaouen Hadjam","Brighton","DEF",53.1],["Sasa Lukic","Ipswich","MID",67.3],["Pep Chavarria","Chelsea","DEF",52.8],["Regan Slater","Hull","MID",66.3],["Semi Ajayi","Hull","DEF",52.0],["Mohamed-Ali Cho","Hull","MID",66.2],["Dayann Methalie","Sunderland","DEF",51.5],["Leon Goretzka","Aston Villa","MID",66.0],["Bafode Diakite","Bournemouth","DEF",51.1],["Frank Onyeka","Coventry","MID",65.1],["Josh Acheampong","Chelsea","DEF",50.9],["Harrison Armstrong","Everton","MID",63.2],["Pascal Struijk","Brighton","DEF",50.1],["Patrick Dorgu","Man Utd","MID",61.7],["Nico Elvedi","Leeds","DEF",49.6],["Shea Charles","Fulham","MID",60.9],["Aaron Wan-Bissaka","Aston Villa","DEF",46.5],["Ayyoub Bouaddi","Man City","MID",60.6],["Leny Yoro","Man Utd","DEF",46.5],["Tyler Dibling","Everton","MID",60.3],["Lewie Coyle","Hull","DEF",45.7],["Keane Lewis-Potter","Brentford","MID",60.0],["Honest Ahanor","Crystal Palace","DEF",42.7],["Rodrigo Bentancur","Spurs","MID",59.8],["Adam Smith","Bournemouth","DEF",42.2],["Alejandro Garnacho","Aston Villa","MID",59.4],["Melvin Bard","Leeds","DEF",39.0],["Romeo Lavia","Chelsea","MID",59.4],["Abdoul Ouattara","Ipswich","DEF",38.6],["Carlos Baleba","Man Utd","MID",59.4],["Noussair Mazraoui","Man Utd","DEF",38.0],["Noni Madueke","Arsenal","MID",58.7],["Fabian Schar","Newcastle","DEF",36.5],["Tatsuhiro Sakamoto","Coventry","MID",56.2],["Victor Lindelof","Aston Villa","DEF",35.5],["Jens Hjerto-Dahl","Hull","MID",56.1],["Veljko Milosavljevic","Bournemouth","DEF",34.6],["Joelinton","Newcastle","MID",56.0],["Kevin Danso","Sunderland","DEF",34.4],["Valentin Barco","Chelsea","MID",55.8],["Kostas Tsimikas","Liverpool","DEF",31.9],["Dwight McNeil","Crystal Palace","MID",54.7],["Tyrone Mings","Aston Villa","DEF",29.0],["Rio Ngumoha","Liverpool","MID",53.8],["Giovanni Leoni","Liverpool","DEF",28.4],["Florentino Luis","Ipswich","MID",53.5],["Darnell Furlong","Ipswich","DEF",27.1],["Bazoumana Toure","Newcastle","MID",53.3],["Matthijs De Ligt","Man Utd","DEF",26.7],["Azor Matusiwa","Ipswich","MID",52.7],["Matt Targett","Hull","DEF",26.5],["Sean Steur","Newcastle","MID",52.7],["Aaron Hickey","Brentford","DEF",26.1],["Lucas Gourna-Douath","Hull","MID",52.3],["Brooke Norton-Cuffy","Hull","DEF",25.7],["Exequiel Palacios","Ipswich","MID",52.3],["Lucas Herrington","Hull","DEF",25.1],["Tim Iroegbunam","Hull","MID",50.7],["Jorge Cuenca","Fulham","DEF",24.1],["Callum Hudson-Odoi","Nott'm Forest","MID",48.7],["Michael Keane","Everton","DEF",23.8],["Yehor Yarmolyuk","Brentford","MID",47.4],["Rayan Ait-Nouri","Man City","DEF",22.5],["Myles Lewis-Skelly","Arsenal","MID",47.4],["Rico Lewis","Man City","DEF",21.3],["Ross Barkley","Aston Villa","MID",47.0],["Cedric Kipre","Ipswich","DEF",21.1],["Amine Adli","Bournemouth","MID",46.6],["Ben Chilwell","Crystal Palace","DEF",20.0],["Dejan Kulusevski","Spurs","MID",46.5],["Joe Gomez","Liverpool","DEF",19.6],["Christian Norgaard","Everton","MID",46.4],["Luca Netz","Nott'm Forest","DEF",17.4],["Evann Guessand","Crystal Palace","MID",45.3],["Tosin Adarabioyo","Spurs","DEF",17.1],["Chemsdine Talbi","Sunderland","MID",44.5],["Luke Woolfenden","Coventry","DEF",16.0],["Hugo Larsson","Fulham","MID",44.0],["Jake Bidwell","Coventry","DEF",15.4],["Ao Tanaka","Leeds","MID",43.7],["Joel Latibeaudiere","Coventry","DEF",14.8],["Lewis Cook","Bournemouth","MID",43.4],["Jack Clarke","Ipswich","MID",43.2],["Archie Gray","Spurs","MID",40.5],["Jean-Matteo Bahoya","Leeds","MID",40.3],["Dario Osorio","Crystal Palace","MID",38.6],["Mateo Kovacic","Man City","MID",38.6],["Quinten Timber","Crystal Palace","MID",38.6],["Jacob Ramsey","Newcastle","MID",37.5],["Joe Willock","Newcastle","MID",36.9],["Chema","Brighton","MID",36.9],["Hidemasa Morita","Hull","MID",36.7],["Nicolas Dominguez","Nott'm Forest","MID",36.0],["Alysson","Aston Villa","MID",35.9],["Chris Rigg","Sunderland","MID",35.4],["Kasey McAteer","Ipswich","MID",35.2],["David Brooks","Bournemouth","MID",35.2],["Lamare Bogarde","Aston Villa","MID",35.1],["Jaden Philogene","Ipswich","MID",34.8],["Jacob Murphy","Newcastle","MID",34.3],["Manuel Angel","Fulham","MID",34.3],["Andrey Santos","Man Utd","MID",33.7],["Sorba Thomas","Hull","MID",33.2],["Victor Torp","Coventry","MID",31.5],["Christos Mouzakitis","Hull","MID",30.4],["Ryan Yates","Nott'm Forest","MID",30.3],["Mason Mount","Man Utd","MID",29.7],["George Hemmings","Aston Villa","MID",28.6],["Aladji Bamba","Newcastle","MID",28.4],["Martin Zubimendi","Arsenal","MID",28.0],["Conor Gallagher","Spurs","MID",26.6],["Gabriel Martinelli","Arsenal","MID",25.2],["Sean Longstaff","Leeds","MID",24.3],["Ben Gannon Doak","Bournemouth","MID",22.9],["Femi Azeez","Brighton","MID",22.6],["Carlos Alcaraz","Everton","MID",22.1],["Mykhailo Mudryk","Spurs","MID",21.7],["Geovany Quenda","Chelsea","MID",21.4],["Ibrahim Osman","Brighton","MID",21.1],["Jamie Gittens","Chelsea","MID",20.7],["Xavi Simons","Spurs","MID",20.0],["Lucas Bergvall","Spurs","MID",19.9],["Josh Eccles","Coventry","MID",19.7],["Antoni Milambo","Brentford","MID",19.6],["Ilia Gruev","Leeds","MID",19.4],["Jocelin Ta Bi","Sunderland","MID",18.5],["Wataru Endo","Liverpool","MID",17.9],["Alex Toth","Bournemouth","MID",16.8],["Jefferson Lerma","Crystal Palace","MID",16.4],["Daniel James","Leeds","MID",15.9],["Will Hughes","Crystal Palace","MID",15.2],["Lewis Koumas","Liverpool","MID",40.0],["Ellis Simms","Coventry","ATT",40.0]];   // [name, club, pos, projPts]
 const FX = {"fx":[["ARS","LIV (A)","HUL (H)","NEW (A)","MCI (H)"],["AVL","FUL (H)","MUN (A)","SUN (H)","IPS (A)"],["BOU","LEE (H)","IPS (A)","NFO (H)","FUL (A)"],["BRE","NFO (H)","BHA (A)","EVE (H)","MUN (A)"],["BHA","MCI (A)","BRE (H)","HUL (A)","NEW (H)"],["CHE","MUN (H)","SUN (A)","LEE (H)","NFO (A)"],["COV","SUN (H)","EVE (A)","CRY (H)","LEE (A)"],["CRY","TOT (A)","LIV (H)","COV (A)","HUL (H)"],["EVE","NEW (A)","COV (H)","BRE (A)","LIV (H)"],["FUL","AVL (A)","NEW (H)","MCI (A)","BOU (H)"],["HUL","IPS (H)","ARS (A)","BHA (H)","CRY (A)"],["IPS","HUL (A)","BOU (H)","TOT (A)","AVL (H)"],["LEE","BOU (A)","TOT (H)","CHE (A)","COV (H)"],["LIV","ARS (H)","CRY (A)","MUN (H)","EVE (A)"],["MCI","BHA (H)","NFO (A)","FUL (H)","ARS (A)"],["MUN","CHE (A)","AVL (H)","LIV (A)","BRE (H)"],["NEW","EVE (H)","FUL (A)","ARS (H)","BHA (A)"],["NFO","BRE (A)","MCI (H)","BOU (A)","CHE (H)"],["TOT","CRY (H)","LEE (A)","IPS (H)","SUN (A)"],["SUN","COV (A)","CHE (H)","AVL (A)","TOT (H)"]],"codes":{"Arsenal":"ARS","Aston Villa":"AVL","Bournemouth":"BOU","Brentford":"BRE","Brighton":"BHA","Chelsea":"CHE","Coventry":"COV","Crystal Palace":"CRY","Everton":"EVE","Fulham":"FUL","Hull":"HUL","Ipswich":"IPS","Leeds":"LEE","Liverpool":"LIV","Man City":"MCI","Man Utd":"MUN","Newcastle":"NEW","Nott'm Forest":"NFO","Spurs":"TOT","Sunderland":"SUN"}};
-let KICKOFF = Date.UTC(2026, 10, 1, 0, 0, 0); // 1 Nov 2026, 00:00 UK time (GMT); the server can override this
+let KICKOFF = Date.UTC(2026, 9, 31, 13, 30, 0); // Sat 31 Oct 2026, 11:30pm AEST (1:30pm GMT); the server can override this
+const LOCK_TEXT = "11:30pm AEST on Saturday 31 October (1:30pm GMT)";
+const LOCK_SHORT = "11:30pm AEST, 31 Oct (1:30pm GMT)";
+// Entry is $25 AUD (£13.20): half to Movember, half to the prize pool. Kept in cents/pence to avoid rounding.
+const HALF_AUD_CENTS = 1250, HALF_GBP_PENCE = 660;
+const INJURED = new Set(["Antoine Semenyo|Man City","Bukayo Saka|Arsenal","Xavi Simons|Spurs","Reece James|Chelsea","Giovanni Leoni|Liverpool","Conor Bradley|Liverpool","Hugo Ekitike|Liverpool"]);
 const FORMATION = ["GK","DEF","DEF","DEF","DEF","MID","MID","MID","MID","ATT","ATT"];
 const ROWS = [[9,10],[5,6,7,8],[1,2,3,4],[0]];
 const POSNAME = {GK:"goalkeeper",DEF:"defender",MID:"midfielder",ATT:"forward"};
@@ -307,6 +337,7 @@ const byKey = new Map(PLAYERS.map(p => [key(p), p]));
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const started = () => Date.now() >= KICKOFF;
+const money = (minor, sym) => sym + (minor / 100).toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const surname = n => { const parts = n.split(" "); return parts.length > 1 && n.length > 12 ? parts.slice(1).join(" ") : n; };
 
 let state = { picks: Array(11).fill(null), captain: "", teamName: "", playerName: "" };
@@ -339,7 +370,7 @@ function tickClock() {
   if (ms <= 0) { $("clock").innerHTML = `<span class="num">Game on</span><span class="lbl">Entries closed. Squads are revealed in the league.</span>`; return false; }
   const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
   const pad = n => String(n).padStart(2, "0");
-  $("clock").innerHTML = `<span class="num">${d}d ${pad(h)}:${pad(m)}:${pad(s)}</span><span class="lbl">until squads lock and are revealed on 1 November</span>`;
+  $("clock").innerHTML = `<span class="num">${d}d ${pad(h)}:${pad(m)}:${pad(s)}</span><span class="lbl">until squads lock and are revealed at ${LOCK_SHORT}</span>`;
   return true;
 }
 let wasStarted = started();
@@ -380,11 +411,13 @@ function problems() {
   const n = state.picks.filter(Boolean).length;
   const clubs = state.picks.filter(Boolean).map(k => byKey.get(k)[1]);
   const dupe = clubs.length !== new Set(clubs).size;
+  const hurt = state.picks.filter(k => k && INJURED.has(k)).map(k => byKey.get(k)[0]);
   return [
     { ok: !!tn, text: "Team name entered" },
     { ok: !!pn, text: "Your name entered" },
     { ok: n === 11, text: n === 11 ? "All 11 players picked" : `${11 - n} player${11 - n === 1 ? "" : "s"} still to pick` },
     { ok: !dupe, text: "One player per club" },
+    { ok: !hurt.length, text: hurt.length ? `Swap out injured: ${hurt.join(", ")}` : "No injured players" },
     { ok: !!state.captain, text: "Captain chosen" },
   ];
 }
@@ -394,6 +427,7 @@ function renderChecks() {
   const allOk = list.every(c => c.ok);
   const btn = $("save");
   btn.hidden = started();
+  $("resetTeam").hidden = started() || !state.picks.some(Boolean);
   btn.textContent = ctx.hasEntry ? "Save changes" : "Lock in my team";
   btn.disabled = !allOk || !ctx.online;
   $("teamName").setAttribute("aria-invalid", !$("teamName").value.trim() && tried);
@@ -401,15 +435,25 @@ function renderChecks() {
 }
 ["teamName","playerName"].forEach(id => $(id).addEventListener("input", () => { dirty = true; renderChecks(); }));
 
+$("resetTeam").addEventListener("click", () => {
+  if (!confirm("Clear all players from your team? Nothing is saved until you lock in again.")) return;
+  state.picks = Array(11).fill(null); state.captain = ""; dirty = true; renderPitch(); toast("Team cleared");
+});
+
 /* ---------- picker ---------- */
 let pickSlot = -1;
 const clubs = [...new Set(PLAYERS.map(p => p[1]))].sort();
-$("pickClub").innerHTML += clubs.map(c => `<option>${esc(c)}</option>`).join("");
+function renderClubOptions() {
+  const sel = $("pickClub"), val = sel.value;
+  const used = new Set(state.picks.filter(Boolean).map(k => byKey.get(k)[1]));
+  sel.innerHTML = `<option value="">All clubs</option>` + clubs.map(c => `<option value="${esc(c)}">${esc(c)}${used.has(c) ? " ✓ (Player Selected)" : ""}</option>`).join("");
+  sel.value = val;
+}
 function openPicker(i) {
   if (started()) return;
   pickSlot = i;
   $("pickTitle").textContent = "Pick a " + POSNAME[FORMATION[i]];
-  $("pickSearch").value = ""; $("pickClub").value = "";
+  $("pickSearch").value = ""; $("pickClub").value = ""; renderClubOptions();
   $("pickClear").hidden = !state.picks[i];
   renderPickList();
   $("picker").showModal();
@@ -426,13 +470,13 @@ function renderPickList() {
     .sort((a, b) => b[3] - a[3]);
   $("pickList").innerHTML = list.length ? list.map(p => {
     const k = key(p);
-    const why = inTeam.has(k) ? "Already in your team" : usedClubs.has(p[1]) ? `You already have ${usedClubs.get(p[1])} from ${p[1]}` : "";
-    return `<button class="opt ${state.picks[pickSlot] === k ? "sel" : ""}" data-k="${esc(k)}" ${why ? "disabled" : ""}>
+    const hurt = INJURED.has(k);
+    const why = hurt ? "(Injured)" : inTeam.has(k) ? "Already in your team" : usedClubs.has(p[1]) ? `You already have ${usedClubs.get(p[1])} from ${p[1]}` : "";
+    return `<button class="opt ${state.picks[pickSlot] === k ? "sel" : ""} ${hurt ? "injured" : ""}" data-k="${esc(k)}" ${why ? "disabled" : ""}>
       <span class="c">${esc(CODE[p[1]] || "")}</span>
-      <span><span class="n">${esc(p[0])}</span>${why ? `<span class="why">${esc(why)}</span>` : ""}</span>
-      <span class="pts">${p[3].toFixed(0)} pts</span></button>`;
+      <span><span class="n">${esc(p[0])}</span>${why ? `<span class="why">${esc(why)}</span>` : ""}</span></button>`;
   }).join("") : `<div class="empty">No ${POSNAME[pos]}s match. Try another search or club.</div>`;
-  $("pickList").querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+  $("pickList").querySelectorAll(".opt:not(:disabled)").forEach(b => b.addEventListener("click", () => {
     const old = state.picks[pickSlot];
     state.picks[pickSlot] = b.dataset.k;
     if (state.captain === old) state.captain = "";
@@ -455,14 +499,14 @@ function renderStatus() {
     html = `<div class="note bad"><strong>Can’t reach the league server.</strong><p>Check your connection and reload the page.</p></div>`;
   } else if (started()) {
     html = ctx.hasEntry
-      ? `<div class="note good"><strong>Your team is locked in.</strong><p>Entries closed on 1 November. Follow the scores in the league.</p></div>`
-      : `<div class="note warn"><strong>Entries are closed.</strong><p>The game started on 1 November. You can still follow the league.</p></div>`;
+      ? `<div class="note good"><strong>Your team is locked in.</strong><p>Entries closed at ${LOCK_SHORT}. Follow the scores in the league.</p></div>`
+      : `<div class="note warn"><strong>Entries are closed.</strong><p>The game locked at ${LOCK_SHORT}. You can still follow the league.</p></div>`;
   } else if (ctx.hasEntry) {
-    html = `<div class="note good"><strong>You’re in.</strong><p>Your squad is hidden from everyone until 1 November. You can make changes on this device until then.</p>
+    html = `<div class="note good"><strong>You’re in.</strong><p>Your squad is hidden from other players until ${LOCK_SHORT}. You can make changes on this device until then.</p>
       <p style="margin-top:10px;font-size:14px"><strong>Your private edit link.</strong> Save it to change your team from another phone or computer. Don’t share it.</p>
       <div style="display:flex;gap:8px;margin-top:6px"><input type="text" readonly id="editLink" value="${esc(editLink())}" aria-label="Your private edit link" style="margin:0;font-size:13px"><button class="ghost" id="copyLink" type="button">Copy</button></div></div>`;
   } else {
-    html = `<div class="note"><strong>Enter your team by 1 November.</strong><p>Tap each shirt to pick a player, choose a captain, then lock in. Nobody sees your squad until kickoff. Entry is $20: $10 to Movember and $10 to the prize pool.</p></div>`;
+    html = `<div class="note"><strong>Enter your team by ${LOCK_SHORT}.</strong><p>Tap each shirt to pick a player, choose a captain, then lock in. Other players can’t see your squad until the lock. Entry is $25 (£13.20): $12.50 to Movember and $12.50 to the prize pool.</p></div>`;
   }
   $("status").innerHTML = html;
   const cl = $("copyLink");
@@ -478,7 +522,7 @@ function renderStatus() {
 $("save").addEventListener("click", async () => {
   $("saveErr").textContent = "";
   dirty = true; tried = true;
-  if (started()) { $("saveErr").textContent = "Entries closed on 1 November."; return; }
+  if (started()) { $("saveErr").textContent = "Entries closed at " + LOCK_SHORT + "."; return; }
   if (!problems().every(c => c.ok)) { renderChecks(); return; }
   const btn = $("save"); btn.disabled = true; btn.textContent = "Saving…";
   try {
@@ -506,6 +550,16 @@ function teamScore(picks, captain) {
   });
   return { gw, total: gw.reduce((a, b) => a + b, 0) };
 }
+const openTeams = new Set();
+function squadTable(e) {
+  const pl = e.picks.map((k, i) => {
+    const p = byKey.get(k) || [k.split("|")[0], k.split("|")[1]]; const s = ctx.scores[k] || []; const m = k === e.captain ? 2 : 1;
+    const gw = [0,1,2,3].map(g => s[g] == null || s[g] === "" ? null : (+s[g]) * m);
+    const tot = gw.reduce((a, v) => a + (v || 0), 0);
+    return `<tr><td>${FORMATION[i]}</td><td>${esc(p[0])} <span class="sub" style="font-size:12px">${esc(CODE[p[1]] || p[1])}</span>${m === 2 ? `<span class="cbadge">C</span>` : ""}</td>${gw.map(v => `<td class="r">${v == null ? "–" : v}</td>`).join("")}<td class="r"><strong>${tot}</strong></td></tr>`;
+  }).join("");
+  return `<div class="scroll"><table class="sqt"><thead><tr><th>Pos</th><th>Player</th><th class="r">GW9</th><th class="r">GW10</th><th class="r">GW11</th><th class="r">GW12</th><th class="r">Total</th></tr></thead><tbody>${pl}<tr><th colspan="2">Team</th>${e.sc.gw.map(v => `<th class="r">${v}</th>`).join("")}<th class="r">${e.sc.total}</th></tr></tbody></table></div><p class="sub" style="font-size:13px;margin:6px 0 0">Captain’s points are shown doubled.</p>`;
+}
 function renderLeague() {
   const live = started();
   const rows = ctx.entries.map(e => {
@@ -515,33 +569,39 @@ function renderLeague() {
   if (live) rows.sort((a, b) => b.sc.total - a.sc.total || b.sc.gw[3] - a.sc.gw[3] || b.sc.gw[2] - a.sc.gw[2] || b.sc.gw[1] - a.sc.gw[1] || b.sc.gw[0] - a.sc.gw[0] || a.teamName.localeCompare(b.teamName));
   else rows.sort((a, b) => (a.joinedAt || "").localeCompare(b.joinedAt || ""));
   const n = rows.length;
-  const total = `$${(n * 10).toLocaleString("en-US")}`;
-  const pool = `<div class="note good" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><strong>Prize pool running total</strong><p style="margin:2px 0 0">$10 from each $20 entry goes into the pool and $10 goes to Movember. ${n} team${n === 1 ? "" : "s"} × $10 = ${total}. The winner takes the whole prize pool.</p></div><span class="cond" style="font-size:36px;font-weight:800;line-height:1">${total}</span></div>`;
-  $("leagueFoot").innerHTML = pool;
-  $("poolLine").textContent = n ? `With ${n} team${n === 1 ? "" : "s"} entered, the pool is currently ${total}.` : "";
-  $("leagueHead").innerHTML = (live
-    ? `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"}. Points include captain double. Ties are decided by GW12, then GW11, GW10 and GW9; if still level, the prize is shared.</p>`
-    : `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"} entered so far. Squads are revealed when the game starts on 1 November.</p>`);
+  const aud = money(n * HALF_AUD_CENTS, "$"), gbp = money(n * HALF_GBP_PENCE, "£");
+  const tile = (label, cls) => `<div class="stat ${cls}"><div class="stat-l">${label}</div><div class="stat-v">${aud}<span>AUD</span></div><div class="stat-g">${gbp} GBP</div></div>`;
+  const totals = `<div class="stats">${tile(live ? "Prize pool total" : "Current prize pool total", "pool")}${tile("Total funds raised for Movember", "mo")}</div>`;
+  $("leagueFoot").innerHTML = "";
+  $("poolLine").textContent = n ? `With ${n} team${n === 1 ? "" : "s"} entered, the pool is currently ${aud} (${gbp}).` : "";
+  $("leagueHead").innerHTML = totals + (live
+    ? `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"}, ranked by total points. Tap a team to see its players and their scores.</p>`
+    : `<p class="sub" style="margin:0 0 14px">${n} team${n === 1 ? "" : "s"} entered so far. Squads are revealed when the game locks at ${LOCK_SHORT}.${ctx.admin ? " As organiser you can see every squad now." : ""}</p>`);
   if (!n) { $("leagueList").innerHTML = `<div class="empty">No teams yet. Be the first to enter from the My team tab.</div>`; return; }
-  let rank = 0, prev = null;
-  $("leagueList").innerHTML = rows.map((e, idx) => {
-    if (live) { const sig = e.sc.total + "|" + [3,2,1,0].map(g => e.sc.gw[g]).join("|"); if (sig !== prev) rank = idx + 1; prev = sig; }
-    const me = e.id === ctx.myId;
-    const right = live
-      ? `<div class="tot">${e.sc.total}<small>points</small></div>`
-      : `<span class="lock"><svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><rect x="1" y="7" width="12" height="8" rx="2" fill="currentColor"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" fill="none"/></svg>Squad hidden</span>`;
-    let sqHtml = "";
-    if (live && e.picks) {
-      sqHtml = `<details class="sq"><summary>Show squad</summary><div class="scroll"><table class="sqt"><thead><tr><th>Pos</th><th>Player</th><th class="r">GW9</th><th class="r">10</th><th class="r">11</th><th class="r">12</th></tr></thead><tbody>${
-        e.picks.map((k, i) => { const p = byKey.get(k) || [k.split("|")[0], k.split("|")[1]]; const s = ctx.scores[k] || []; const m = k === e.captain ? 2 : 1;
-          return `<tr><td>${FORMATION[i]}</td><td>${esc(p[0])} <span class="sub" style="font-size:12px">${esc(CODE[p[1]] || p[1])}</span>${m === 2 ? `<span class="cbadge">C</span>` : ""}</td>${[0,1,2,3].map(g => `<td class="r">${s[g] == null || s[g] === "" ? "–" : (+s[g]) * m}</td>`).join("")}</tr>`; }).join("")
-      }<tr><th colspan="2">Team</th>${e.sc.gw.map(v => `<th class="r">${v}</th>`).join("")}</tr></tbody></table></div></details>`;
-    } else if (live) {
-      sqHtml = `<p class="sub" style="font-size:14px;margin:8px 0 0">Squad not revealed yet.</p>`;
-    }
-    const del = ctx.admin ? `<button class="ghost" data-del="${esc(e.id)}" style="margin-top:8px;font-size:13px;padding:5px 10px">Remove entry</button>` : "";
-    return `<div class="entry ${me ? "me" : ""}"><div class="hd">${live ? `<span class="rank">${rank}</span>` : ""}<div class="who"><div class="tn">${esc(e.teamName)}${me ? ` <span class="cbadge" style="background:var(--ink);color:var(--bg)">You</span>` : ""}</div><div class="mn">${esc(e.playerName)}</div></div>${right}</div>${sqHtml}${del}</div>`;
-  }).join("");
+  const del = e => ctx.admin ? `<button class="ghost" data-del="${esc(e.id)}" style="margin-top:8px;font-size:13px;padding:5px 10px">Remove entry</button>` : "";
+  const you = e => e.id === ctx.myId ? ` <span class="cbadge" style="background:var(--ink);color:var(--bg)">You</span>` : "";
+
+  if (live) {
+    let rank = 0, prev = null;
+    $("leagueList").innerHTML = `<div class="scroll"><table class="lt"><thead><tr><th class="r">#</th><th>Team</th><th class="r">GW9</th><th class="r">GW10</th><th class="r">GW11</th><th class="r">GW12</th><th class="r">Total</th></tr></thead>${
+      rows.map((e, idx) => {
+        const sig = e.sc.total + "|" + [3,2,1,0].map(g => e.sc.gw[g]).join("|"); if (sig !== prev) rank = idx + 1; prev = sig;
+        const open = openTeams.has(e.id);
+        return `<tbody class="${e.id === ctx.myId ? "me" : ""}"><tr class="team"><td class="r rk">${rank}</td>
+          <td><button class="tbtn" data-open="${esc(e.id)}" aria-expanded="${open}"><span class="tn">${esc(e.teamName)}</span>${you(e)}<span class="mn">${esc(e.playerName)}</span></button></td>
+          ${e.sc.gw.map(v => `<td class="r">${v}</td>`).join("")}<td class="r tt">${e.sc.total}</td></tr>
+          ${open ? `<tr class="detail"><td colspan="7">${e.picks ? squadTable(e) : `<p class="sub" style="margin:0">Squad not revealed yet.</p>`}${del(e)}</td></tr>` : ""}</tbody>`;
+      }).join("")}</table></div>`;
+    $("leagueList").querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => {
+      const id = b.dataset.open; openTeams.has(id) ? openTeams.delete(id) : openTeams.add(id); renderLeague();
+    }));
+  } else {
+    $("leagueList").innerHTML = rows.map(e => {
+      const right = e.picks ? "" : `<span class="lock"><svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><rect x="1" y="7" width="12" height="8" rx="2" fill="currentColor"/><path d="M4 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="2" fill="none"/></svg>Squad hidden</span>`;
+      const sq = e.picks ? `<details class="sq"><summary>Show squad</summary>${squadTable(e)}</details>` : "";
+      return `<div class="entry ${e.id === ctx.myId ? "me" : ""}"><div class="hd"><div class="who"><div class="tn">${esc(e.teamName)}${you(e)}</div><div class="mn">${esc(e.playerName)}</div></div>${right}</div>${sq}${del(e)}</div>`;
+    }).join("");
+  }
   $("leagueList").querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
     const e = ctx.entries.find(x => x.id === b.dataset.del);
     if (!confirm(`Remove ${e?.teamName || "this entry"}? This can’t be undone.`)) return;
@@ -553,7 +613,7 @@ function renderLeague() {
 /* ---------- league data ---------- */
 async function loadLeague() {
   try {
-    const data = await api("/api/league");
+    const data = await api("/api/league", ctx.admin ? { headers: { "x-admin-password": ctx.admin } } : {});
     ctx.online = true;
     if (data.kickoff && !isNaN(Date.parse(data.kickoff))) KICKOFF = Date.parse(data.kickoff);
     ctx.entries = data.entries || [];
@@ -577,7 +637,7 @@ function pickedPlayers() {
 let scoreDraft = null;
 function renderScores() {
   if (!ctx.admin) return;
-  if (!started()) { $("scoreGrid").innerHTML = `<tr><td class="empty">Scores open once the game starts on 1 November and squads are revealed.</td></tr>`; $("saveScores").disabled = true; return; }
+  if (!started()) { $("scoreGrid").innerHTML = `<tr><td class="empty">Scores open once the game locks at ${LOCK_SHORT} and squads are revealed.</td></tr>`; $("saveScores").disabled = true; return; }
   if (!scoreDraft) scoreDraft = JSON.parse(JSON.stringify(ctx.scores || {}));
   const q = $("scoreSearch").value.trim().toLowerCase();
   const list = pickedPlayers().filter(p => !q || p[0].toLowerCase().includes(q) || p[1].toLowerCase().includes(q));
@@ -639,7 +699,7 @@ async function organiserLogin() {
     await api("/api/admin", { headers: { "x-admin-password": pw } });
     ctx.admin = pw; try { sessionStorage.setItem("mff_admin", pw); } catch (e) {}
     $("t-scores").hidden = false; $("orgLogin").textContent = "Organiser mode on";
-    renderLeague(); showTab("scores", true); toast("Organiser mode on");
+    showTab("scores", true); toast("Organiser mode on"); loadLeague();
   } catch (e) { alert(e.message); }
 }
 $("orgLogin").addEventListener("click", organiserLogin);

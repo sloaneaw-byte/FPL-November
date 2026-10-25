@@ -1,14 +1,15 @@
 import { getStore } from "@netlify/blobs";
-import { PLAYERS } from "./players.mjs";
+import { PLAYERS, INJURED } from "./players.mjs";
 
-// The game starts at midnight UK time on 1 November 2026 (GMT, so UTC).
-// Set a KICKOFF environment variable (e.g. 2026-10-31T11:00:00Z) to move it.
-export const KICKOFF = Date.parse(process.env.KICKOFF || "2026-11-01T00:00:00Z");
+// The game locks at 11:30pm AEST (UTC+10) on Saturday 31 October 2026, which is 1:30pm GMT.
+// Set a KICKOFF environment variable (e.g. 2026-10-31T13:30:00Z) to move it.
+export const KICKOFF = Date.parse(process.env.KICKOFF || "2026-10-31T13:30:00Z");
 export const started = () => Date.now() >= KICKOFF;
 
 export const FORMATION = ["GK","DEF","DEF","DEF","DEF","MID","MID","MID","MID","ATT","ATT"];
 const byKey = new Map(PLAYERS.map(p => [p[0] + "|" + p[1], p]));
 export const isPlayer = k => byKey.has(k);
+const injured = new Set(INJURED);
 
 export const store = () => getStore({ name: "movember-league", consistency: "strong" });
 
@@ -28,8 +29,8 @@ export const idFromToken = async token => (await sha256("entry:" + token)).slice
 export const newToken = () => [...crypto.getRandomValues(new Uint8Array(20))].map(b => b.toString(16).padStart(2, "0")).join("");
 
 export async function isAdmin(req) {
-  const pw = process.env.ADMIN_PASSWORD;
-  const given = req.headers.get("x-admin-password") || "";
+  const pw = (process.env.ADMIN_PASSWORD || "").trim();
+  const given = (req.headers.get("x-admin-password") || "").trim();
   if (!pw || !given) return false;
   return (await sha256(pw)) === (await sha256(given));
 }
@@ -48,6 +49,7 @@ export function validateEntry(body) {
     const p = byKey.get(picks[i]);
     if (!p) return { error: "One of your players isn't in the player list." };
     if (p[2] !== FORMATION[i]) return { error: `${p[0]} can't play ${FORMATION[i]}.` };
+    if (injured.has(picks[i])) return { error: `${p[0]} is injured. Pick someone else.` };
   }
   if (new Set(picks).size !== 11) return { error: "You've picked the same player twice." };
   if (new Set(picks.map(k => byKey.get(k)[1])).size !== 11) return { error: "Only one player per club." };

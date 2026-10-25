@@ -14,7 +14,7 @@ export default async (req) => {
   }
 
   if (req.method !== "POST") return json({ error: "Method not allowed." }, 405);
-  if (started()) return json({ error: "Entries closed on 1 November." }, 403);
+  if (started()) return json({ error: "Entries closed at 11:30pm AEST on 31 October." }, 403);
 
   let body;
   try { body = await req.json(); } catch { return json({ error: "Invalid request." }, 400); }

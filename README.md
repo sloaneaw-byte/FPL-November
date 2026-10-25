@@ -1,6 +1,6 @@
 # Movember Fantasy Football 2026
 
-A small website for the Movember FPL challenge. Players enter a team (team name, their name, a 4-4-2 eleven and a captain). Squads stay hidden on the server until the game starts on 1 November. After that the league shows every squad, and the organiser enters scores.
+A small website for the Movember FPL challenge. Players enter a team (team name, their name, a 4-4-2 eleven and a captain). Squads stay hidden on the server until the game locks at 11:30pm AEST on 31 October (1:30pm GMT). After that the league shows every squad, and the organiser enters scores.
 
 ## What's in this folder
 
@@ -50,12 +50,13 @@ Your site lives at something like `https://your-site-name.netlify.app`. You can 
 
 - Click **Organiser login** at the bottom of the page and enter your `ADMIN_PASSWORD`.
 - You can then remove duplicate or test entries and, once the game starts, use the **Enter scores** tab to type in each player's FPL points per gameweek.
-- Before kickoff, nobody can see squads, including you. The server doesn't send them out.
-- The app doesn't collect the $20 entry fee. The prize pool shown is $10 for every team entered.
+- Before the lock, only you (as organiser) can see squads. Players can't see each other's teams until then.
+- The app doesn't collect the $25 (£13.20) entry fee. The prize pool and Movember totals shown are $12.50 (£6.60) each for every team entered.
+- Injured players are listed in `netlify/lib/players.mjs` and in `public/index.html`.
 
 ## Optional: change the kickoff time
 
-The deadline is midnight UK time on 1 November 2026. To change it, add an environment variable named `KICKOFF` with a time such as `2026-10-31T11:00:00Z` (UTC), then redeploy.
+The deadline is 11:30pm AEST on 31 October 2026 (1:30pm GMT). To change it, add an environment variable named `KICKOFF` with a time such as `2026-10-31T13:30:00Z` (UTC), then redeploy.
 
 ## Making changes later
 
